@@ -57,14 +57,14 @@ class FileNotFoundExtPage < FileNotFoundPage
   end
   def temporary_redirects
     if temporary = part("temporary")
-      redirect_hash(temporary.content)
+      redirect_hash(parse_object(temporary))
     else
       {}
     end
   end
   def permanent_redirects
     if permanent = part("permanent")
-      redirect_hash(permanent.content)
+      redirect_hash(parse_object(permanent))
     else
       {}
     end
