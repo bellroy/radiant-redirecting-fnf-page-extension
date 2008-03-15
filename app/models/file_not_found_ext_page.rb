@@ -92,7 +92,13 @@ class FileNotFoundExtPage < FileNotFoundPage
     CGI.escapeHTML(request.request_uri) unless request.nil?
   end
   def attempted_path
-    path_without_leading_slash(attempted_uri[%r{^\w+://[^/]+(.+)$}, 1])
+    uri = attempted_uri
+    case uri
+    when %r{^\w+://[^/]+/}
+      path_without_leading_slash(uri[%r{^\w+://[^/]+(.+)$}, 1])
+    else
+      path_without_leading_slash(uri)
+    end
   end
 
 end
