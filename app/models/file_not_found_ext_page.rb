@@ -76,7 +76,7 @@ class FileNotFoundExtPage < FileNotFoundPage
       hash_from_yaml = YAML.load(yaml)
       raise PageConfigError, "There is a problem with your temporary or permanent configuration page parts." unless hash_from_yaml.is_a?(Hash)
       hash_from_yaml.each_pair do |k,v|
-        hash[path_without_leading_slash(k)] = path_without_leading_slash(v)
+        hash[path_without_lead_or_trailing_slash(k)] = path_without_lead_or_trailing_slash(v)
       end
       hash
     rescue RuntimeError => e
@@ -84,8 +84,8 @@ class FileNotFoundExtPage < FileNotFoundPage
       raise e
     end
   end
-  def path_without_leading_slash(path)
-    path[%r{^/?(.*)$}, 1]
+  def path_without_lead_or_trailing_slash(path)
+    path[%r{^/?(.*)/?$}, 1]
   end
 
   def attempted_uri
@@ -95,9 +95,9 @@ class FileNotFoundExtPage < FileNotFoundPage
     uri = attempted_uri
     case uri
     when %r{^\w+://[^/]+/}
-      path_without_leading_slash(uri[%r{^\w+://[^/]+(.+)$}, 1])
+      path_without_lead_or_trailing_slash(uri[%r{^\w+://[^/]+(.+)$}, 1])
     else
-      path_without_leading_slash(uri)
+      path_without_lead_or_trailing_slash(uri)
     end
   end
 
