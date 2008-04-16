@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/../test_helper'
 class FileNotFoundExtPageTest < Test::Unit::TestCase
   test_helper :page
 
-  YamlHash = <<-YAML
+  YAMLHASH = <<-YAML
 a/page: http://example.com/a/page
 /a-page: /a/different/page
 last-page: the/last/page
@@ -38,14 +38,14 @@ last-page: the/last/page
 
   def test_that_appropriate_html_is_rendered_when_url_is_found_in_permanent_page_part
     part = @page.parts.find_or_create_by_name("permanent")
-    part.content = YamlHash
+    part.content = YAMLHASH
     part.save!; @page.reload
 
     assert_page_renders(/<title>301/, '/a/page')
   end
   def test_that_location_is_rendered_in_headers_when_url_is_found_in_permanent_page_part
     part = @page.parts.find_or_create_by_name("permanent")
-    part.content = YamlHash
+    part.content = YAMLHASH
     part.save!; @page.reload
 
     assert_headers({"Location"=>"http://example.com/a/page", "Status"=>"301 Moved Permanently"}, '/a/page')
@@ -53,14 +53,14 @@ last-page: the/last/page
 
   def test_that_appropriate_html_is_rendered_when_url_is_found_in_temporary_page_part
     part = @page.parts.find_or_create_by_name("temporary")
-    part.content = YamlHash
+    part.content = YAMLHASH
     part.save!; @page.reload
 
     assert_page_renders(/<title>302/, '/a/page')
   end
   def test_that_location_is_rendered_in_headers_when_url_is_found_in_temporary_page_part
     part = @page.parts.find_or_create_by_name("temporary")
-    part.content = YamlHash
+    part.content = YAMLHASH
     part.save!; @page.reload
 
     assert_headers({"Location"=>"http://example.com/a/page", "Status"=>"302 Found"}, '/a/page')
