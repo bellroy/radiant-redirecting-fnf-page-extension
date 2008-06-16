@@ -7,7 +7,8 @@ class RedirectingFnfPageExtension < Radiant::Extension
   url "http://github.com/tricycle/radiant-redirecting-fnf-page-extension/"
   
   def activate
-    FileNotFoundExtPage
+    FileNotFoundPage
+    RedirectingFnfPage
   end
   
 end

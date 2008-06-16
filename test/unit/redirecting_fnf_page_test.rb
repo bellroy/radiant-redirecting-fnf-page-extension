@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/../test_helper'
 
-class FileNotFoundExtPageTest < Test::Unit::TestCase
+class RedirectingFnfPagePageTest < Test::Unit::TestCase
   test_helper :page
 
   YAMLHASH = <<-YAML
@@ -15,7 +15,7 @@ last-page: the/last/page
     @root.save!
 
     title = "Page Not Found"
-    @page = FileNotFoundExtPage.find_or_create_by_title(title)
+    @page = RedirectingFnfPage.find_or_create_by_title(title)
     @page.slug, @page.breadcrumb = title.downcase.tr(' ','-'), title
     @page.parts.find_or_create_by_name("body")
     @page.save!
@@ -71,7 +71,7 @@ last-page: the/last/page
     part.content = "This is not a valid YAML hash"
     part.save!; @page.reload
 
-    assert_raise(FileNotFoundExtPage::PageConfigError) { @page.render }
+    assert_raise(RedirectingFnfPage::PageConfigError) { @page.render }
   end
 
 end
