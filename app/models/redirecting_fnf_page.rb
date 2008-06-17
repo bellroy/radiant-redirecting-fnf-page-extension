@@ -1,4 +1,4 @@
-class FileNotFoundExtPage < FileNotFoundPage
+class RedirectingFnfPage < FileNotFoundPage
 
   class PageConfigError < StandardError; end
 
