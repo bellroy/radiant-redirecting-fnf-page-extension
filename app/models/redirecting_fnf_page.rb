@@ -2,6 +2,22 @@ class RedirectingFnfPage < FileNotFoundPage
 
   class PageConfigError < StandardError; end
 
+  def validate
+    hash = {}
+    self.parts.each do |page_part|
+      if page_part.name == 'temporary' or page_part.name == 'permanent'
+        page_part_arr =  str2array(page_part.content)
+        page_part_arr.each do |p| 
+          unless hash.has_key?(p[0])
+            hash[p[0]] = page_part.name
+          else
+            errors.add_to_base("Cannot save since there is duplication of rediecting urls" ) 
+          end
+        end
+      end
+    end
+  end
+
   description %{
     A "File Not Found Ext" page is like a "File Not Found" page, extended.
     
@@ -99,6 +115,19 @@ class RedirectingFnfPage < FileNotFoundPage
     else
       path_without_lead_or_trailing_slash(uri)
     end
+  end
+
+  # its better to use a YAML library functionality to convert the YAML str to 2-D array below
+  def str2array(str)
+    main_arr = []
+    str = str.gsub(/\r/, '')
+    str_arr = str.split(/\n/)
+    str_arr.each do |s|
+       node = s.split(': ')
+       sim_arr = [node[0], node[1].strip]     
+       main_arr << sim_arr
+    end
+    return main_arr
   end
 
 end

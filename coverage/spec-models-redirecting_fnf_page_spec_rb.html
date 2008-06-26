@@ -556,7 +556,7 @@ span.run100 {
       </head>
       <body>
         <h3>C0 code coverage information</h3>
-        <p>Generated on Tue Jun 24 18:29:03 +0530 2008 with <a href='http://eigenclass.org/hiki/rcov'>rcov 0.8.1.2</a>
+        <p>Generated on Thu Jun 26 10:18:16 +0530 2008 with <a href='http://eigenclass.org/hiki/rcov'>rcov 0.8.1.2</a>
         </p>
         <hr /><pre><span class='marked0'>Code reported as executed by Ruby looks like this...
 </span><span class='marked1'>and this: this line is also marked as covered.
@@ -580,10 +580,10 @@ span.run100 {
             <a href='spec-models-redirecting_fnf_page_spec_rb.html'>spec/models/redirecting_fnf_page_spec.rb</a>
           </td>
           <td class='lines_total'>
-            <tt>136</tt>
+            <tt>166</tt>
           </td>
           <td class='lines_code'>
-            <tt>111</tt>
+            <tt>136</tt>
           </td>
           <td>
             <table cellspacing='0' cellpadding='0' align='right'>
@@ -619,142 +619,172 @@ span.run100 {
           </td>
         </tr>
       </tbody>
-    </table><pre><span class="marked0"><a name="line1"></a>  1 require File.dirname(__FILE__) + '/../spec_helper'
-</span><span class="inferred1"><a name="line2"></a>  2 
-</span><span class="marked0"><a name="line3"></a>  3 describe RedirectingFnfPage do 
-</span><span class="marked1"><a name="line4"></a>  4     scenario :users, :home_page
-</span><span class="inferred0"><a name="line5"></a>  5 
-</span><span class="marked1"><a name="line6"></a>  6     TEMPYAMLHASH = &lt;&lt;-YAML
-</span><span class="inferred0"><a name="line7"></a>  7 a/page: http://example/new/page
-</span><span class="inferred1"><a name="line8"></a>  8 /a-page: /a/different/page
-</span><span class="inferred0"><a name="line9"></a>  9 last-page: the/last/page
-</span><span class="inferred1"><a name="line10"></a> 10                     YAML
-</span><span class="inferred0"><a name="line11"></a> 11 
-</span><span class="marked1"><a name="line12"></a> 12     PERMYAMLHASH = &lt;&lt;-YAML
-</span><span class="inferred0"><a name="line13"></a> 13 a1/page: http://example.com/new1/page
-</span><span class="inferred1"><a name="line14"></a> 14 /a1-page: /a/different/page
-</span><span class="inferred0"><a name="line15"></a> 15 last1-page: the/last/page
-</span><span class="inferred1"><a name="line16"></a> 16                     YAML
-</span><span class="inferred0"><a name="line17"></a> 17 
-</span><span class="marked1"><a name="line18"></a> 18     before do
-</span><span class="marked0"><a name="line19"></a> 19         create_page &quot;Gallery&quot;, :body =&gt; 'Hello World'
-</span><span class="marked1"><a name="line20"></a> 20         create_page &quot;File not found&quot;, :class_name =&gt; &quot;RedirectingFnfPage&quot;, :slug =&gt; ' ', :breadcrumb =&gt; '-' do
-</span><span class="marked0"><a name="line21"></a> 21               create_page_part &quot;body&quot;, :content =&gt; &quot;&lt;span&gt;File not found&lt;/span&gt;&quot;, :id =&gt; 100
-</span><span class="inferred1"><a name="line22"></a> 22         end
-</span><span class="inferred0"><a name="line23"></a> 23         
-</span><span class="inferred1"><a name="line24"></a> 24     end
-</span><span class="inferred0"><a name="line25"></a> 25 
-</span><span class="marked1"><a name="line26"></a> 26     it &quot;should not redirect to file not found if file is valid&quot; do  
-</span><span class="marked0"><a name="line27"></a> 27       pages(:home).find_by_url(&quot;/gallery&quot;).should_not == pages(:file_not_found)
-</span><span class="inferred1"><a name="line28"></a> 28     end
-</span><span class="inferred0"><a name="line29"></a> 29 
-</span><span class="marked1"><a name="line30"></a> 30     it &quot;should redirect to the file not found if file not found&quot; do  
-</span><span class="marked0"><a name="line31"></a> 31       pages(:home).find_by_url(&quot;/missing_url&quot;).should == pages(:file_not_found)
-</span><span class="inferred1"><a name="line32"></a> 32     end
-</span><span class="inferred0"><a name="line33"></a> 33 
-</span><span class="marked1"><a name="line34"></a> 34     it &quot;should render the body part when urls are not found in config page parts&quot; do
-</span><span class="marked0"><a name="line35"></a> 35        pages(:file_not_found).should render('&lt;r:content /&gt;').as('&lt;span&gt;File not found&lt;/span&gt;')
-</span><span class="inferred1"><a name="line36"></a> 36     end
-</span><span class="inferred0"><a name="line37"></a> 37 
-</span><span class="marked1"><a name="line38"></a> 38     it &quot;should raise error if the hash specified in temporary page part content is invalid&quot; do
-</span><span class="marked0"><a name="line39"></a> 39        page = pages(:file_not_found)
-</span><span class="marked1"><a name="line40"></a> 40        create_page_part &quot;temporary&quot;, :content =&gt; &quot;Not an hash&quot;, :page_id =&gt; page.id
-</span><span class="marked0"><a name="line41"></a> 41        lambda { render_header(page, '/a') }.should raise_error(RedirectingFnfPage::PageConfigError)
-</span><span class="inferred1"><a name="line42"></a> 42     end
-</span><span class="inferred0"><a name="line43"></a> 43 
-</span><span class="marked1"><a name="line44"></a> 44     it &quot;should raise error if the hash specified in permanent page part content is invalid&quot; do
-</span><span class="marked0"><a name="line45"></a> 45        page = pages(:file_not_found)
-</span><span class="marked1"><a name="line46"></a> 46        create_page_part &quot;permanent&quot;, :content =&gt; &quot;Not an hash&quot;, :page_id =&gt; page.id
-</span><span class="marked0"><a name="line47"></a> 47        lambda { render_header(page, '/a') }.should raise_error(RedirectingFnfPage::PageConfigError)
-</span><span class="inferred1"><a name="line48"></a> 48     end
-</span><span class="inferred0"><a name="line49"></a> 49 
-</span><span class="marked1"><a name="line50"></a> 50     it &quot;&quot; do
-</span><span class="marked0"><a name="line51"></a> 51        page = pages(:file_not_found)
-</span><span class="marked1"><a name="line52"></a> 52        create_page_part &quot;temporary&quot;, :content =&gt; TEMPYAMLHASH, :page_id =&gt; page.id
-</span><span class="marked0"><a name="line53"></a> 53        render_header(page, '/missing_url').should == {&quot;Status&quot;=&gt;&quot;404 Not Found&quot;}
-</span><span class="marked1"><a name="line54"></a> 54        page.render.should == '&lt;span&gt;File not found&lt;/span&gt;'
-</span><span class="inferred0"><a name="line55"></a> 55     end
-</span><span class="inferred1"><a name="line56"></a> 56 
-</span><span class="marked0"><a name="line57"></a> 57     describe &quot;temporary redirects&quot; do
-</span><span class="inferred1"><a name="line58"></a> 58 
-</span><span class="marked0"><a name="line59"></a> 59        before  do
-</span><span class="marked1"><a name="line60"></a> 60 	  create_page_part &quot;temporary&quot;, :content =&gt; TEMPYAMLHASH, :page_id =&gt; pages(:file_not_found).id
-</span><span class="inferred0"><a name="line61"></a> 61        end
-</span><span class="inferred1"><a name="line62"></a> 62 
-</span><span class="marked0"><a name="line63"></a> 63        TEMPYAMLHASH.each do |y|
-</span><span class="marked1"><a name="line64"></a> 64           yaml_arr = y.split(': ')
-</span><span class="marked0"><a name="line65"></a> 65 	     it &quot;should render header with location and status 302 when temporary part exists (for missing url #{yaml_arr[0]})&quot; do 
-</span><span class="marked1"><a name="line66"></a> 66 	        page = pages(:file_not_found)
-</span><span class="marked0"><a name="line67"></a> 67 		render_header(page, yaml_arr[0]).should == {&quot;Location&quot; =&gt; process_location(yaml_arr[1]), &quot;Status&quot;=&gt;&quot;302 Found&quot;}
-</span><span class="inferred1"><a name="line68"></a> 68 	      end
-</span><span class="marked0"><a name="line69"></a> 69              it &quot;&quot; do
-</span><span class="marked1"><a name="line70"></a> 70                 page = pages(:file_not_found)
-</span><span class="marked0"><a name="line71"></a> 71                 page = setup_page(page, yaml_arr[0])
-</span><span class="marked1"><a name="line72"></a> 72                 page.render.should match(/&lt;title&gt;302/)
-</span><span class="inferred0"><a name="line73"></a> 73              end
-</span><span class="inferred1"><a name="line74"></a> 74         end
-</span><span class="inferred0"><a name="line75"></a> 75 
-</span><span class="marked1"><a name="line76"></a> 76        TEMPYAMLHASH.each do |y|
-</span><span class="marked0"><a name="line77"></a> 77           yaml_arr = y.split(': ')
-</span><span class="marked1"><a name="line78"></a> 78              it &quot;should render temporary redirect if there is both temporary and permanent redirects for same url and temporary preceeds permanent&quot; do
-</span><span class="marked0"><a name="line79"></a> 79                 page = pages(:file_not_found)
-</span><span class="marked1"><a name="line80"></a> 80                 create_page_part &quot;permanent&quot;, :content =&gt; TEMPYAMLHASH, :page_id =&gt; page.id
-</span><span class="marked0"><a name="line81"></a> 81 		render_header(page, yaml_arr[0]).should == {&quot;Location&quot; =&gt; process_location(yaml_arr[1]), &quot;Status&quot;=&gt;&quot;302 Found&quot;}
-</span><span class="inferred1"><a name="line82"></a> 82              end
-</span><span class="inferred0"><a name="line83"></a> 83         end
-</span><span class="inferred1"><a name="line84"></a> 84 
-</span><span class="inferred0"><a name="line85"></a> 85     end
-</span><span class="inferred1"><a name="line86"></a> 86 
-</span><span class="marked0"><a name="line87"></a> 87     describe &quot;permanent redirects&quot; do
-</span><span class="inferred1"><a name="line88"></a> 88 
-</span><span class="marked0"><a name="line89"></a> 89        before  do
-</span><span class="marked1"><a name="line90"></a> 90 	  create_page_part &quot;permanent&quot;, :content =&gt; PERMYAMLHASH, :page_id =&gt; pages(:file_not_found).id
-</span><span class="inferred0"><a name="line91"></a> 91        end
-</span><span class="inferred1"><a name="line92"></a> 92 
-</span><span class="marked0"><a name="line93"></a> 93        PERMYAMLHASH.each do |y|
-</span><span class="marked1"><a name="line94"></a> 94           yaml_arr = y.split(': ')
-</span><span class="marked0"><a name="line95"></a> 95              it &quot;should render header with location and status 301 when permanent part exists (for missing url #{yaml_arr[0]})&quot; do
-</span><span class="marked1"><a name="line96"></a> 96                 page = pages(:file_not_found)
-</span><span class="marked0"><a name="line97"></a> 97                 render_header(page, yaml_arr[0]).should == {&quot;Location&quot; =&gt; process_location(yaml_arr[1]), &quot;Status&quot;=&gt;&quot;301 Moved Permanently&quot;}
-</span><span class="inferred1"><a name="line98"></a> 98              end
-</span><span class="marked0"><a name="line99"></a> 99              it &quot;&quot; do
-</span><span class="marked1"><a name="line100"></a>100                 page = pages(:file_not_found)
-</span><span class="marked0"><a name="line101"></a>101                 page = setup_page(page, yaml_arr[0])
-</span><span class="marked1"><a name="line102"></a>102                 page.render.should match(/&lt;title&gt;301/)
-</span><span class="inferred0"><a name="line103"></a>103              end
-</span><span class="inferred1"><a name="line104"></a>104         end
-</span><span class="inferred0"><a name="line105"></a>105 
-</span><span class="marked1"><a name="line106"></a>106        PERMYAMLHASH.each do |y|
-</span><span class="marked0"><a name="line107"></a>107           yaml_arr = y.split(': ')
-</span><span class="marked1"><a name="line108"></a>108              it &quot;should render temporary redirect if there is both temporary and permanent redirects for same url and permanent preceeds temporary&quot; do
-</span><span class="marked0"><a name="line109"></a>109                 page = pages(:file_not_found)
-</span><span class="marked1"><a name="line110"></a>110                 create_page_part &quot;temporary&quot;, :content =&gt; PERMYAMLHASH, :page_id =&gt; page.id
-</span><span class="marked0"><a name="line111"></a>111                 render_header(page, yaml_arr[0]).should == {&quot;Location&quot; =&gt; process_location(yaml_arr[1]), &quot;Status&quot;=&gt;&quot;302 Found&quot;}
-</span><span class="inferred1"><a name="line112"></a>112              end
-</span><span class="inferred0"><a name="line113"></a>113         end
-</span><span class="inferred1"><a name="line114"></a>114 
-</span><span class="inferred0"><a name="line115"></a>115     end
-</span><span class="inferred1"><a name="line116"></a>116 
-</span><span class="marked0"><a name="line117"></a>117    private
-</span><span class="inferred1"><a name="line118"></a>118 
-</span><span class="marked0"><a name="line119"></a>119     def render_header(page, url)
-</span><span class="marked1"><a name="line120"></a>120       page = setup_page(page, url)
-</span><span class="marked0"><a name="line121"></a>121       headers = page.headers
-</span><span class="inferred1"><a name="line122"></a>122     end
-</span><span class="inferred0"><a name="line123"></a>123 
-</span><span class="marked1"><a name="line124"></a>124     def setup_page(page, url)
-</span><span class="marked0"><a name="line125"></a>125       page.request = ActionController::TestRequest.new
-</span><span class="marked1"><a name="line126"></a>126       page.request.request_uri = (url)
-</span><span class="marked0"><a name="line127"></a>127       page.response = ActionController::TestResponse.new
-</span><span class="marked1"><a name="line128"></a>128       return page
-</span><span class="inferred0"><a name="line129"></a>129     end
-</span><span class="inferred1"><a name="line130"></a>130 
-</span><span class="marked0"><a name="line131"></a>131     def process_location(loc)
-</span><span class="marked1"><a name="line132"></a>132       loc.strip!
-</span><span class="marked0"><a name="line133"></a>133       loc.slice!(0,1) if loc.slice(0,1) == '/'        
-</span><span class="marked1"><a name="line134"></a>134       loc.chomp
-</span><span class="inferred0"><a name="line135"></a>135     end
-</span><span class="inferred1"><a name="line136"></a>136 end
+    </table><pre><span class="marked1"><a name="line1"></a>  1 require File.dirname(__FILE__) + '/../spec_helper'
+</span><span class="inferred0"><a name="line2"></a>  2 
+</span><span class="marked1"><a name="line3"></a>  3 describe RedirectingFnfPage do 
+</span><span class="marked0"><a name="line4"></a>  4     scenario :home_page
+</span><span class="inferred1"><a name="line5"></a>  5 
+</span><span class="marked0"><a name="line6"></a>  6     TEMPYAMLHASH = &lt;&lt;-YAML
+</span><span class="inferred1"><a name="line7"></a>  7 a/page: http://example/new/page
+</span><span class="inferred0"><a name="line8"></a>  8 /a-page: /a/different/page
+</span><span class="inferred1"><a name="line9"></a>  9 last-page: the/last/page
+</span><span class="inferred0"><a name="line10"></a> 10                     YAML
+</span><span class="inferred1"><a name="line11"></a> 11 
+</span><span class="marked0"><a name="line12"></a> 12     PERMYAMLHASH = &lt;&lt;-YAML
+</span><span class="inferred1"><a name="line13"></a> 13 a1/page: http://example.com/new1/page
+</span><span class="inferred0"><a name="line14"></a> 14 /a1-page: /a1/different/page
+</span><span class="inferred1"><a name="line15"></a> 15 last1-page: the1/last/page
+</span><span class="inferred0"><a name="line16"></a> 16                     YAML
+</span><span class="inferred1"><a name="line17"></a> 17 
+</span><span class="marked0"><a name="line18"></a> 18     DUPYAMLHASH = &lt;&lt;-YAML
+</span><span class="inferred1"><a name="line19"></a> 19 dupa1: http://example/new/page
+</span><span class="inferred0"><a name="line20"></a> 20 dupa1: /a/different/page
+</span><span class="inferred1"><a name="line21"></a> 21 last-page: the/last/page
+</span><span class="inferred0"><a name="line22"></a> 22                      YAML
+</span><span class="inferred1"><a name="line23"></a> 23 
+</span><span class="marked0"><a name="line24"></a> 24     before do
+</span><span class="marked1"><a name="line25"></a> 25         create_page &quot;Gallery&quot;, :body =&gt; 'Hello World'
+</span><span class="marked0"><a name="line26"></a> 26         create_page &quot;File not found&quot;, :class_name =&gt; &quot;RedirectingFnfPage&quot; do
+</span><span class="marked1"><a name="line27"></a> 27               create_page_part &quot;body&quot;, :content =&gt; &quot;&lt;span&gt;File not found&lt;/span&gt;&quot;, :id =&gt; 100
+</span><span class="inferred0"><a name="line28"></a> 28         end        
+</span><span class="inferred1"><a name="line29"></a> 29     end
+</span><span class="inferred0"><a name="line30"></a> 30 
+</span><span class="marked1"><a name="line31"></a> 31     it &quot;should not redirect to file not found if requested page is present&quot; do  
+</span><span class="marked0"><a name="line32"></a> 32       pages(:home).find_by_url(&quot;/gallery&quot;).should_not == pages(:file_not_found)
+</span><span class="inferred1"><a name="line33"></a> 33     end
+</span><span class="inferred0"><a name="line34"></a> 34 
+</span><span class="marked1"><a name="line35"></a> 35     it &quot;should redirect to the file not found if requested page is not present&quot; do  
+</span><span class="marked0"><a name="line36"></a> 36       pages(:home).find_by_url(&quot;/missing_url&quot;).should == pages(:file_not_found)
+</span><span class="inferred1"><a name="line37"></a> 37     end
+</span><span class="inferred0"><a name="line38"></a> 38 
+</span><span class="marked1"><a name="line39"></a> 39     it &quot;should render the 'body' part of file_not_found page when there are no temporary or permanent part&quot; do
+</span><span class="marked0"><a name="line40"></a> 40        pages(:file_not_found).should render('&lt;r:content /&gt;').as('&lt;span&gt;File not found&lt;/span&gt;')
+</span><span class="inferred1"><a name="line41"></a> 41     end
+</span><span class="inferred0"><a name="line42"></a> 42 
+</span><span class="marked1"><a name="line43"></a> 43     it &quot;should raise error if the YAML specified in temporary page part content is invalid&quot; do
+</span><span class="marked0"><a name="line44"></a> 44        page = pages(:file_not_found)
+</span><span class="marked1"><a name="line45"></a> 45        create_page_part &quot;temporary&quot;, :content =&gt; &quot;Not an hash&quot;, :page_id =&gt; page.id
+</span><span class="marked0"><a name="line46"></a> 46        lambda { render_header(page, '/a') }.should raise_error(RedirectingFnfPage::PageConfigError)
+</span><span class="inferred1"><a name="line47"></a> 47     end
+</span><span class="inferred0"><a name="line48"></a> 48 
+</span><span class="marked1"><a name="line49"></a> 49     it &quot;should raise error if the YAML specified in permanent page part content is invalid&quot; do
+</span><span class="marked0"><a name="line50"></a> 50        page = pages(:file_not_found)
+</span><span class="marked1"><a name="line51"></a> 51        create_page_part &quot;permanent&quot;, :content =&gt; &quot;Not an hash&quot;, :page_id =&gt; page.id
+</span><span class="marked0"><a name="line52"></a> 52        lambda { render_header(page, '/a') }.should raise_error(RedirectingFnfPage::PageConfigError)
+</span><span class="inferred1"><a name="line53"></a> 53     end
+</span><span class="inferred0"><a name="line54"></a> 54 
+</span><span class="marked1"><a name="line55"></a> 55     it &quot;should render the 'body' part of file_not_found when the missing url does not match any url's provided in temporary part&quot; do
+</span><span class="marked0"><a name="line56"></a> 56        page = pages(:file_not_found)
+</span><span class="marked1"><a name="line57"></a> 57        create_page_part &quot;temporary&quot;, :content =&gt; TEMPYAMLHASH, :page_id =&gt; page.id
+</span><span class="marked0"><a name="line58"></a> 58        render_header(page, '/missing_url').should == {&quot;Status&quot;=&gt;&quot;404 Not Found&quot;}
+</span><span class="marked1"><a name="line59"></a> 59        page.render.should == '&lt;span&gt;File not found&lt;/span&gt;'
+</span><span class="inferred0"><a name="line60"></a> 60     end
+</span><span class="inferred1"><a name="line61"></a> 61 
+</span><span class="marked0"><a name="line62"></a> 62     it &quot;should render the 'body' part of file_not_found when the missing url does not match any url's provided in permanent part&quot; do
+</span><span class="marked1"><a name="line63"></a> 63        page = pages(:file_not_found)
+</span><span class="marked0"><a name="line64"></a> 64        create_page_part &quot;permanent&quot;, :content =&gt; PERMYAMLHASH, :page_id =&gt; page.id
+</span><span class="marked1"><a name="line65"></a> 65        render_header(page, '/missing_url').should == {&quot;Status&quot;=&gt;&quot;404 Not Found&quot;}
+</span><span class="marked0"><a name="line66"></a> 66        page.render.should == '&lt;span&gt;File not found&lt;/span&gt;'
+</span><span class="inferred1"><a name="line67"></a> 67     end
+</span><span class="inferred0"><a name="line68"></a> 68 
+</span><span class="marked1"><a name="line69"></a> 69     describe &quot;temporary redirects&quot; do
+</span><span class="inferred0"><a name="line70"></a> 70 
+</span><span class="marked1"><a name="line71"></a> 71        before  do
+</span><span class="marked0"><a name="line72"></a> 72 	  create_page_part &quot;temporary&quot;, :content =&gt; TEMPYAMLHASH, :page_id =&gt; pages(:file_not_found).id
+</span><span class="inferred1"><a name="line73"></a> 73        end
+</span><span class="inferred0"><a name="line74"></a> 74 
+</span><span class="marked1"><a name="line75"></a> 75        TEMPYAMLHASH.each do |y|
+</span><span class="marked0"><a name="line76"></a> 76           yaml_arr = y.split(': ')
+</span><span class="marked1"><a name="line77"></a> 77 	     it &quot;should render header with location and status 302 when temporary part exists (for missing url #{yaml_arr[0]})&quot; do 
+</span><span class="marked0"><a name="line78"></a> 78 	        page = pages(:file_not_found)
+</span><span class="marked1"><a name="line79"></a> 79 		render_header(page, yaml_arr[0]).should == {&quot;Location&quot; =&gt; process_location(yaml_arr[1]), &quot;Status&quot;=&gt;&quot;302 Found&quot;}
+</span><span class="inferred0"><a name="line80"></a> 80 	      end
+</span><span class="marked1"><a name="line81"></a> 81              it &quot;should render appropriate html when temporary part exists (for missing url #{yaml_arr[0]}&quot; do
+</span><span class="marked0"><a name="line82"></a> 82                 page = pages(:file_not_found)
+</span><span class="marked1"><a name="line83"></a> 83                 page = setup_page(page, yaml_arr[0])
+</span><span class="marked0"><a name="line84"></a> 84                 page.render.should match(/&lt;title&gt;302/)
+</span><span class="inferred1"><a name="line85"></a> 85              end
+</span><span class="inferred0"><a name="line86"></a> 86         end
+</span><span class="inferred1"><a name="line87"></a> 87     end
+</span><span class="inferred0"><a name="line88"></a> 88 
+</span><span class="marked1"><a name="line89"></a> 89     describe &quot;permanent redirects&quot; do
+</span><span class="inferred0"><a name="line90"></a> 90 
+</span><span class="marked1"><a name="line91"></a> 91        before  do
+</span><span class="marked0"><a name="line92"></a> 92 	  create_page_part &quot;permanent&quot;, :content =&gt; PERMYAMLHASH, :page_id =&gt; pages(:file_not_found).id
+</span><span class="inferred1"><a name="line93"></a> 93        end
+</span><span class="inferred0"><a name="line94"></a> 94 
+</span><span class="marked1"><a name="line95"></a> 95        PERMYAMLHASH.each do |y|
+</span><span class="marked0"><a name="line96"></a> 96           yaml_arr = y.split(': ')
+</span><span class="marked1"><a name="line97"></a> 97              it &quot;should render header with location and status 301 when permanent part exists (for missing url #{yaml_arr[0]})&quot; do
+</span><span class="marked0"><a name="line98"></a> 98                 page = pages(:file_not_found)
+</span><span class="marked1"><a name="line99"></a> 99                 render_header(page, yaml_arr[0]).should == {&quot;Location&quot; =&gt; process_location(yaml_arr[1]), &quot;Status&quot;=&gt;&quot;301 Moved Permanently&quot;}
+</span><span class="inferred0"><a name="line100"></a>100              end
+</span><span class="marked1"><a name="line101"></a>101              it &quot;should render appropriate html when permanent part exists (for missing url #{yaml_arr[0]}&quot; do
+</span><span class="marked0"><a name="line102"></a>102                 page = pages(:file_not_found)
+</span><span class="marked1"><a name="line103"></a>103                 page = setup_page(page, yaml_arr[0])
+</span><span class="marked0"><a name="line104"></a>104                 page.render.should match(/&lt;title&gt;301/)
+</span><span class="inferred1"><a name="line105"></a>105              end
+</span><span class="inferred0"><a name="line106"></a>106         end         
+</span><span class="inferred1"><a name="line107"></a>107 
+</span><span class="inferred0"><a name="line108"></a>108     end
+</span><span class="inferred1"><a name="line109"></a>109 
+</span><span class="marked0"><a name="line110"></a>110     describe &quot;validations&quot; do
+</span><span class="inferred1"><a name="line111"></a>111 
+</span><span class="marked0"><a name="line112"></a>112       it &quot;should be invaid if the same url to redirect is first added in temporary page part and then to permanent page part&quot; do                
+</span><span class="marked1"><a name="line113"></a>113          page = pages(:file_not_found)
+</span><span class="marked0"><a name="line114"></a>114          create_page_part &quot;temporary&quot;, :content =&gt; TEMPYAMLHASH, :page_id =&gt; page.id
+</span><span class="marked1"><a name="line115"></a>115          create_page_part &quot;permanent&quot;, :content =&gt; TEMPYAMLHASH, :page_id =&gt; page.id
+</span><span class="marked0"><a name="line116"></a>116          page.should_not be_valid    
+</span><span class="inferred1"><a name="line117"></a>117       end       
+</span><span class="inferred0"><a name="line118"></a>118 
+</span><span class="marked1"><a name="line119"></a>119       it &quot;should be invaid if the same url to redirect is first added in permanent page part and then to temporary page part&quot; do                
+</span><span class="marked0"><a name="line120"></a>120          page = pages(:file_not_found)
+</span><span class="marked1"><a name="line121"></a>121          create_page_part &quot;permanent&quot;, :content =&gt; PERMYAMLHASH, :page_id =&gt; page.id
+</span><span class="marked0"><a name="line122"></a>122          create_page_part &quot;temporary&quot;, :content =&gt; PERMYAMLHASH, :page_id =&gt; page.id
+</span><span class="marked1"><a name="line123"></a>123          page.should_not be_valid             
+</span><span class="inferred0"><a name="line124"></a>124       end   
+</span><span class="inferred1"><a name="line125"></a>125 
+</span><span class="marked0"><a name="line126"></a>126       it &quot;should be invalid if there are duplicate url's in the content of permanent page part&quot; do
+</span><span class="marked1"><a name="line127"></a>127          page = pages(:file_not_found)
+</span><span class="marked0"><a name="line128"></a>128          create_page_part &quot;permanent&quot;, :content =&gt; DUPYAMLHASH, :page_id =&gt; page.id
+</span><span class="marked1"><a name="line129"></a>129          page.should_not be_valid  
+</span><span class="inferred0"><a name="line130"></a>130       end
+</span><span class="inferred1"><a name="line131"></a>131 
+</span><span class="marked0"><a name="line132"></a>132       it &quot;should be invalid if there are duplicate url's in the content of temporary page part&quot; do
+</span><span class="marked1"><a name="line133"></a>133          page = pages(:file_not_found)
+</span><span class="marked0"><a name="line134"></a>134          create_page_part &quot;temporary&quot;, :content =&gt; DUPYAMLHASH, :page_id =&gt; page.id
+</span><span class="marked1"><a name="line135"></a>135          page.should_not be_valid  
+</span><span class="inferred0"><a name="line136"></a>136       end
+</span><span class="inferred1"><a name="line137"></a>137 
+</span><span class="marked0"><a name="line138"></a>138       it &quot;should be valid if there are different url's in temporary and permanent page parts&quot; do
+</span><span class="marked1"><a name="line139"></a>139          page = pages(:file_not_found)
+</span><span class="marked0"><a name="line140"></a>140          create_page_part &quot;temporary&quot;, :content =&gt; TEMPYAMLHASH, :page_id =&gt; page.id
+</span><span class="marked1"><a name="line141"></a>141          create_page_part &quot;permanent&quot;, :content =&gt; PERMYAMLHASH, :page_id =&gt; page.id
+</span><span class="marked0"><a name="line142"></a>142          page.should be_valid
+</span><span class="inferred1"><a name="line143"></a>143       end
+</span><span class="inferred0"><a name="line144"></a>144 
+</span><span class="inferred1"><a name="line145"></a>145     end
+</span><span class="inferred0"><a name="line146"></a>146 
+</span><span class="marked1"><a name="line147"></a>147    private
+</span><span class="inferred0"><a name="line148"></a>148 
+</span><span class="marked1"><a name="line149"></a>149     def render_header(page, url)
+</span><span class="marked0"><a name="line150"></a>150       page = setup_page(page, url)
+</span><span class="marked1"><a name="line151"></a>151       headers = page.headers
+</span><span class="inferred0"><a name="line152"></a>152     end
+</span><span class="inferred1"><a name="line153"></a>153 
+</span><span class="marked0"><a name="line154"></a>154     def setup_page(page, url)
+</span><span class="marked1"><a name="line155"></a>155       page.request = ActionController::TestRequest.new
+</span><span class="marked0"><a name="line156"></a>156       page.request.request_uri = url
+</span><span class="marked1"><a name="line157"></a>157       page.response = ActionController::TestResponse.new
+</span><span class="marked0"><a name="line158"></a>158       return page
+</span><span class="inferred1"><a name="line159"></a>159     end
+</span><span class="inferred0"><a name="line160"></a>160 
+</span><span class="marked1"><a name="line161"></a>161     def process_location(loc)
+</span><span class="marked0"><a name="line162"></a>162       loc.strip!
+</span><span class="marked1"><a name="line163"></a>163       loc.slice!(0,1) if loc.slice(0,1) == '/'        
+</span><span class="marked0"><a name="line164"></a>164       loc.chomp
+</span><span class="inferred1"><a name="line165"></a>165     end
+</span><span class="inferred0"><a name="line166"></a>166 end
 </span></pre><hr />    <p>Generated using the <a href='http://eigenclass.org/hiki.rb?rcov'>rcov code coverage analysis tool for Ruby</a> version 0.8.1.2.</p><p>
           <a href='http://validator.w3.org/check/referer'>
             <img src='http://www.w3.org/Icons/valid-xhtml10' height='31' alt='Valid XHTML 1.0!' width='88' />

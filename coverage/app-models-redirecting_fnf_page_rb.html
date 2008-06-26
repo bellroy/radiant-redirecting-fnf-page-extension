@@ -556,7 +556,7 @@ span.run100 {
       </head>
       <body>
         <h3>C0 code coverage information</h3>
-        <p>Generated on Tue Jun 24 18:29:03 +0530 2008 with <a href='http://eigenclass.org/hiki/rcov'>rcov 0.8.1.2</a>
+        <p>Generated on Thu Jun 26 10:18:16 +0530 2008 with <a href='http://eigenclass.org/hiki/rcov'>rcov 0.8.1.2</a>
         </p>
         <hr /><pre><span class='marked0'>Code reported as executed by Ruby looks like this...
 </span><span class='marked1'>and this: this line is also marked as covered.
@@ -580,21 +580,21 @@ span.run100 {
             <a href='app-models-redirecting_fnf_page_rb.html'>app/models/redirecting_fnf_page.rb</a>
           </td>
           <td class='lines_total'>
-            <tt>104</tt>
+            <tt>133</tt>
           </td>
           <td class='lines_code'>
-            <tt>92</tt>
+            <tt>118</tt>
           </td>
           <td>
             <table cellspacing='0' cellpadding='0' align='right'>
               <tr>
                 <td>
-                  <tt class='coverage_total'>96.2%</tt>&nbsp;</td>
+                  <tt class='coverage_total'>97.0%</tt>&nbsp;</td>
                 <td>
                   <table cellspacing='0' class='percent_graph' cellpadding='0' width='100'>
                     <tr>
-                      <td class='covered' width='96' />
-                      <td class='uncovered' width='4' />
+                      <td class='covered' width='97' />
+                      <td class='uncovered' width='3' />
                     </tr>
                   </table>
                 </td>
@@ -605,12 +605,12 @@ span.run100 {
             <table cellspacing='0' cellpadding='0' align='right'>
               <tr>
                 <td>
-                  <tt class='coverage_code'>95.7%</tt>&nbsp;</td>
+                  <tt class='coverage_code'>96.6%</tt>&nbsp;</td>
                 <td>
                   <table cellspacing='0' class='percent_graph' cellpadding='0' width='100'>
                     <tr>
-                      <td class='covered' width='96' />
-                      <td class='uncovered' width='4' />
+                      <td class='covered' width='97' />
+                      <td class='uncovered' width='3' />
                     </tr>
                   </table>
                 </td>
@@ -623,106 +623,135 @@ span.run100 {
 </span><span class="inferred1"><a name="line2"></a>  2 
 </span><span class="marked0"><a name="line3"></a>  3   class PageConfigError &lt; StandardError; end
 </span><span class="inferred1"><a name="line4"></a>  4 
-</span><span class="inferred0"><a name="line5"></a>  5   description %{
-</span><span class="inferred1"><a name="line6"></a>  6     A &quot;File Not Found Ext&quot; page is like a &quot;File Not Found&quot; page, extended.
-</span><span class="inferred0"><a name="line7"></a>  7     
-</span><span class="inferred1"><a name="line8"></a>  8     Adding a page part called &quot;temporary&quot; allows you to define temporary redirections
-</span><span class="inferred0"><a name="line9"></a>  9     (that will not be remembered by search engines or properly behaved tools) (strictly
-</span><span class="inferred1"><a name="line10"></a> 10     302 status codes). A page part called &quot;permanent&quot; allows permanent redirections 
-</span><span class="inferred0"><a name="line11"></a> 11     (strictly, 301 status codes).
-</span><span class="marked1"><a name="line12"></a> 12   }
-</span><span class="inferred0"><a name="line13"></a> 13   
-</span><span class="marked1"><a name="line14"></a> 14   def headers
-</span><span class="marked0"><a name="line15"></a> 15     status = status_header
-</span><span class="marked1"><a name="line16"></a> 16     if status.match(/^404/)
-</span><span class="marked0"><a name="line17"></a> 17       { 'Status' =&gt; status_header }
-</span><span class="inferred1"><a name="line18"></a> 18     else
-</span><span class="marked0"><a name="line19"></a> 19       { 'Status' =&gt; status_header, &quot;Location&quot; =&gt; location_header }
-</span><span class="inferred1"><a name="line20"></a> 20     end
-</span><span class="inferred0"><a name="line21"></a> 21   end
-</span><span class="inferred1"><a name="line22"></a> 22 
-</span><span class="marked0"><a name="line23"></a> 23   def render
-</span><span class="marked1"><a name="line24"></a> 24     if redirect = redirects[attempted_path]
-</span><span class="inferred0"><a name="line25"></a> 25       &lt;&lt;-HTML
-</span><span class="inferred1"><a name="line26"></a> 26 &lt;!DOCTYPE HTML PUBLIC &quot;-//IETF//DTD HTML 2.0//EN&quot;&gt;
-</span><span class="inferred0"><a name="line27"></a> 27 &lt;html&gt;&lt;head&gt;
-</span><span class="marked1"><a name="line28"></a> 28 &lt;title&gt;#{status_header}&lt;/title&gt;
-</span><span class="inferred0"><a name="line29"></a> 29 &lt;/head&gt;&lt;body&gt;
-</span><span class="inferred1"><a name="line30"></a> 30 &lt;h1&gt;Found&lt;/h1&gt;
-</span><span class="inferred0"><a name="line31"></a> 31 &lt;p&gt;The document has moved &lt;a href=&quot;#{redirect}&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
-</span><span class="inferred1"><a name="line32"></a> 32 &lt;/body&gt;&lt;/html&gt;
-</span><span class="inferred0"><a name="line33"></a> 33       HTML
+</span><span class="marked0"><a name="line5"></a>  5   def validate
+</span><span class="marked1"><a name="line6"></a>  6     hash = {}
+</span><span class="marked0"><a name="line7"></a>  7     self.parts.each do |page_part|
+</span><span class="marked1"><a name="line8"></a>  8       if page_part.name == 'temporary' or page_part.name == 'permanent'
+</span><span class="marked0"><a name="line9"></a>  9         page_part_arr =  str2array(page_part.content)
+</span><span class="marked1"><a name="line10"></a> 10         page_part_arr.each do |p| 
+</span><span class="marked0"><a name="line11"></a> 11           unless hash.has_key?(p[0])
+</span><span class="marked1"><a name="line12"></a> 12             hash[p[0]] = page_part.name
+</span><span class="inferred0"><a name="line13"></a> 13           else
+</span><span class="marked1"><a name="line14"></a> 14             errors.add_to_base(&quot;Cannot save since there is duplication of rediecting urls&quot; ) 
+</span><span class="inferred0"><a name="line15"></a> 15           end
+</span><span class="inferred1"><a name="line16"></a> 16         end
+</span><span class="inferred0"><a name="line17"></a> 17       end
+</span><span class="inferred1"><a name="line18"></a> 18     end
+</span><span class="inferred0"><a name="line19"></a> 19   end
+</span><span class="inferred1"><a name="line20"></a> 20 
+</span><span class="inferred0"><a name="line21"></a> 21   description %{
+</span><span class="inferred1"><a name="line22"></a> 22     A &quot;File Not Found Ext&quot; page is like a &quot;File Not Found&quot; page, extended.
+</span><span class="inferred0"><a name="line23"></a> 23     
+</span><span class="inferred1"><a name="line24"></a> 24     Adding a page part called &quot;temporary&quot; allows you to define temporary redirections
+</span><span class="inferred0"><a name="line25"></a> 25     (that will not be remembered by search engines or properly behaved tools) (strictly
+</span><span class="inferred1"><a name="line26"></a> 26     302 status codes). A page part called &quot;permanent&quot; allows permanent redirections 
+</span><span class="inferred0"><a name="line27"></a> 27     (strictly, 301 status codes).
+</span><span class="marked1"><a name="line28"></a> 28   }
+</span><span class="inferred0"><a name="line29"></a> 29   
+</span><span class="marked1"><a name="line30"></a> 30   def headers
+</span><span class="marked0"><a name="line31"></a> 31     status = status_header
+</span><span class="marked1"><a name="line32"></a> 32     if status.match(/^404/)
+</span><span class="marked0"><a name="line33"></a> 33       { 'Status' =&gt; status_header }
 </span><span class="inferred1"><a name="line34"></a> 34     else
-</span><span class="marked0"><a name="line35"></a> 35       super
+</span><span class="marked0"><a name="line35"></a> 35       { 'Status' =&gt; status_header, &quot;Location&quot; =&gt; location_header }
 </span><span class="inferred1"><a name="line36"></a> 36     end
-</span><span class="marked0"><a name="line37"></a> 37   end
+</span><span class="inferred0"><a name="line37"></a> 37   end
 </span><span class="inferred1"><a name="line38"></a> 38 
-</span><span class="marked0"><a name="line39"></a> 39   private
-</span><span class="inferred1"><a name="line40"></a> 40 
-</span><span class="marked0"><a name="line41"></a> 41   def status_header
-</span><span class="marked1"><a name="line42"></a> 42     if temporary_redirects[attempted_path]
-</span><span class="marked0"><a name="line43"></a> 43       &quot;302 Found&quot;
-</span><span class="marked1"><a name="line44"></a> 44     elsif permanent_redirects[attempted_path]
-</span><span class="marked0"><a name="line45"></a> 45       &quot;301 Moved Permanently&quot;
-</span><span class="inferred1"><a name="line46"></a> 46     else
-</span><span class="marked0"><a name="line47"></a> 47       &quot;404 Not Found&quot;
-</span><span class="inferred1"><a name="line48"></a> 48     end
-</span><span class="marked0"><a name="line49"></a> 49   end
-</span><span class="inferred1"><a name="line50"></a> 50 
-</span><span class="marked0"><a name="line51"></a> 51   def location_header
-</span><span class="marked1"><a name="line52"></a> 52     temporary_redirects[attempted_path] || permanent_redirects[attempted_path]
+</span><span class="marked0"><a name="line39"></a> 39   def render
+</span><span class="marked1"><a name="line40"></a> 40     if redirect = redirects[attempted_path]
+</span><span class="inferred0"><a name="line41"></a> 41       &lt;&lt;-HTML
+</span><span class="inferred1"><a name="line42"></a> 42 &lt;!DOCTYPE HTML PUBLIC &quot;-//IETF//DTD HTML 2.0//EN&quot;&gt;
+</span><span class="inferred0"><a name="line43"></a> 43 &lt;html&gt;&lt;head&gt;
+</span><span class="marked1"><a name="line44"></a> 44 &lt;title&gt;#{status_header}&lt;/title&gt;
+</span><span class="inferred0"><a name="line45"></a> 45 &lt;/head&gt;&lt;body&gt;
+</span><span class="inferred1"><a name="line46"></a> 46 &lt;h1&gt;Found&lt;/h1&gt;
+</span><span class="inferred0"><a name="line47"></a> 47 &lt;p&gt;The document has moved &lt;a href=&quot;#{redirect}&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+</span><span class="inferred1"><a name="line48"></a> 48 &lt;/body&gt;&lt;/html&gt;
+</span><span class="inferred0"><a name="line49"></a> 49       HTML
+</span><span class="inferred1"><a name="line50"></a> 50     else
+</span><span class="marked0"><a name="line51"></a> 51       super
+</span><span class="inferred1"><a name="line52"></a> 52     end
 </span><span class="marked0"><a name="line53"></a> 53   end
 </span><span class="inferred1"><a name="line54"></a> 54 
-</span><span class="marked0"><a name="line55"></a> 55   def redirects
-</span><span class="marked1"><a name="line56"></a> 56     temporary_redirects.merge(permanent_redirects) 
-</span><span class="marked0"><a name="line57"></a> 57   end
-</span><span class="marked1"><a name="line58"></a> 58   def temporary_redirects
-</span><span class="marked0"><a name="line59"></a> 59     if temporary = part(&quot;temporary&quot;)
-</span><span class="marked1"><a name="line60"></a> 60       redirect_hash(parse_object(temporary))
-</span><span class="inferred0"><a name="line61"></a> 61     else
-</span><span class="marked1"><a name="line62"></a> 62       {}
-</span><span class="inferred0"><a name="line63"></a> 63     end
-</span><span class="marked1"><a name="line64"></a> 64   end
-</span><span class="marked0"><a name="line65"></a> 65   def permanent_redirects
-</span><span class="marked1"><a name="line66"></a> 66     if permanent = part(&quot;permanent&quot;)
-</span><span class="marked0"><a name="line67"></a> 67       redirect_hash(parse_object(permanent))
-</span><span class="inferred1"><a name="line68"></a> 68     else
-</span><span class="marked0"><a name="line69"></a> 69       {}
-</span><span class="inferred1"><a name="line70"></a> 70     end
-</span><span class="marked0"><a name="line71"></a> 71   end
-</span><span class="inferred1"><a name="line72"></a> 72 
-</span><span class="marked0"><a name="line73"></a> 73   def redirect_hash(yaml)
-</span><span class="marked1"><a name="line74"></a> 74     begin
-</span><span class="marked0"><a name="line75"></a> 75       hash = {}
-</span><span class="marked1"><a name="line76"></a> 76       hash_from_yaml = YAML.load(yaml)
-</span><span class="marked0"><a name="line77"></a> 77       raise PageConfigError, &quot;There is a problem with your temporary or permanent configuration page parts.&quot; unless hash_from_yaml.is_a?(Hash)
-</span><span class="marked1"><a name="line78"></a> 78       hash_from_yaml.each_pair do |k,v|
-</span><span class="marked0"><a name="line79"></a> 79         hash[path_without_lead_or_trailing_slash(k)] = path_without_lead_or_trailing_slash(v)
-</span><span class="inferred1"><a name="line80"></a> 80       end
-</span><span class="marked0"><a name="line81"></a> 81       hash
-</span><span class="uncovered1"><a name="line82"></a> 82     rescue RuntimeError =&gt; e
-</span><span class="uncovered0"><a name="line83"></a> 83       puts e.inspect
-</span><span class="uncovered1"><a name="line84"></a> 84       raise e
-</span><span class="uncovered0"><a name="line85"></a> 85     end
-</span><span class="marked1"><a name="line86"></a> 86   end
-</span><span class="marked0"><a name="line87"></a> 87   def path_without_lead_or_trailing_slash(path)
-</span><span class="marked1"><a name="line88"></a> 88     path[%r{^/?(.*)/?$}, 1]
-</span><span class="marked0"><a name="line89"></a> 89   end
-</span><span class="inferred1"><a name="line90"></a> 90 
-</span><span class="marked0"><a name="line91"></a> 91   def attempted_uri
-</span><span class="marked1"><a name="line92"></a> 92     CGI.escapeHTML(request.request_uri) unless request.nil?
-</span><span class="marked0"><a name="line93"></a> 93   end
-</span><span class="marked1"><a name="line94"></a> 94   def attempted_path
-</span><span class="marked0"><a name="line95"></a> 95     uri = attempted_uri
-</span><span class="marked1"><a name="line96"></a> 96     case uri
-</span><span class="marked0"><a name="line97"></a> 97     when %r{^\w+://[^/]+/}
-</span><span class="inferred1"><a name="line98"></a> 98       path_without_lead_or_trailing_slash(uri[%r{^\w+://[^/]+(.+)$}, 1])
-</span><span class="inferred0"><a name="line99"></a> 99     else
-</span><span class="marked1"><a name="line100"></a>100       path_without_lead_or_trailing_slash(uri)
-</span><span class="inferred0"><a name="line101"></a>101     end
-</span><span class="inferred1"><a name="line102"></a>102   end
-</span><span class="inferred0"><a name="line103"></a>103 
-</span><span class="inferred1"><a name="line104"></a>104 end
+</span><span class="marked0"><a name="line55"></a> 55   private
+</span><span class="inferred1"><a name="line56"></a> 56 
+</span><span class="marked0"><a name="line57"></a> 57   def status_header
+</span><span class="marked1"><a name="line58"></a> 58     if temporary_redirects[attempted_path]
+</span><span class="marked0"><a name="line59"></a> 59       &quot;302 Found&quot;
+</span><span class="marked1"><a name="line60"></a> 60     elsif permanent_redirects[attempted_path]
+</span><span class="marked0"><a name="line61"></a> 61       &quot;301 Moved Permanently&quot;
+</span><span class="inferred1"><a name="line62"></a> 62     else
+</span><span class="marked0"><a name="line63"></a> 63       &quot;404 Not Found&quot;
+</span><span class="inferred1"><a name="line64"></a> 64     end
+</span><span class="marked0"><a name="line65"></a> 65   end
+</span><span class="inferred1"><a name="line66"></a> 66 
+</span><span class="marked0"><a name="line67"></a> 67   def location_header
+</span><span class="marked1"><a name="line68"></a> 68     temporary_redirects[attempted_path] || permanent_redirects[attempted_path]
+</span><span class="marked0"><a name="line69"></a> 69   end
+</span><span class="inferred1"><a name="line70"></a> 70 
+</span><span class="marked0"><a name="line71"></a> 71   def redirects
+</span><span class="marked1"><a name="line72"></a> 72     temporary_redirects.merge(permanent_redirects) 
+</span><span class="marked0"><a name="line73"></a> 73   end
+</span><span class="marked1"><a name="line74"></a> 74   def temporary_redirects
+</span><span class="marked0"><a name="line75"></a> 75     if temporary = part(&quot;temporary&quot;)
+</span><span class="marked1"><a name="line76"></a> 76       redirect_hash(parse_object(temporary))
+</span><span class="inferred0"><a name="line77"></a> 77     else
+</span><span class="marked1"><a name="line78"></a> 78       {}
+</span><span class="inferred0"><a name="line79"></a> 79     end
+</span><span class="marked1"><a name="line80"></a> 80   end
+</span><span class="marked0"><a name="line81"></a> 81   def permanent_redirects
+</span><span class="marked1"><a name="line82"></a> 82     if permanent = part(&quot;permanent&quot;)
+</span><span class="marked0"><a name="line83"></a> 83       redirect_hash(parse_object(permanent))
+</span><span class="inferred1"><a name="line84"></a> 84     else
+</span><span class="marked0"><a name="line85"></a> 85       {}
+</span><span class="inferred1"><a name="line86"></a> 86     end
+</span><span class="marked0"><a name="line87"></a> 87   end
+</span><span class="inferred1"><a name="line88"></a> 88 
+</span><span class="marked0"><a name="line89"></a> 89   def redirect_hash(yaml)
+</span><span class="marked1"><a name="line90"></a> 90     begin
+</span><span class="marked0"><a name="line91"></a> 91       hash = {}
+</span><span class="marked1"><a name="line92"></a> 92       hash_from_yaml = YAML.load(yaml)
+</span><span class="marked0"><a name="line93"></a> 93       raise PageConfigError, &quot;There is a problem with your temporary or permanent configuration page parts.&quot; unless hash_from_yaml.is_a?(Hash)
+</span><span class="marked1"><a name="line94"></a> 94       hash_from_yaml.each_pair do |k,v|
+</span><span class="marked0"><a name="line95"></a> 95         hash[path_without_lead_or_trailing_slash(k)] = path_without_lead_or_trailing_slash(v)
+</span><span class="inferred1"><a name="line96"></a> 96       end
+</span><span class="marked0"><a name="line97"></a> 97       hash
+</span><span class="uncovered1"><a name="line98"></a> 98     rescue RuntimeError =&gt; e
+</span><span class="uncovered0"><a name="line99"></a> 99       puts e.inspect
+</span><span class="uncovered1"><a name="line100"></a>100       raise e
+</span><span class="uncovered0"><a name="line101"></a>101     end
+</span><span class="marked1"><a name="line102"></a>102   end
+</span><span class="marked0"><a name="line103"></a>103   def path_without_lead_or_trailing_slash(path)
+</span><span class="marked1"><a name="line104"></a>104     path[%r{^/?(.*)/?$}, 1]
+</span><span class="marked0"><a name="line105"></a>105   end
+</span><span class="inferred1"><a name="line106"></a>106 
+</span><span class="marked0"><a name="line107"></a>107   def attempted_uri
+</span><span class="marked1"><a name="line108"></a>108     CGI.escapeHTML(request.request_uri) unless request.nil?
+</span><span class="marked0"><a name="line109"></a>109   end
+</span><span class="marked1"><a name="line110"></a>110   def attempted_path
+</span><span class="marked0"><a name="line111"></a>111     uri = attempted_uri
+</span><span class="marked1"><a name="line112"></a>112     case uri
+</span><span class="marked0"><a name="line113"></a>113     when %r{^\w+://[^/]+/}
+</span><span class="inferred1"><a name="line114"></a>114       path_without_lead_or_trailing_slash(uri[%r{^\w+://[^/]+(.+)$}, 1])
+</span><span class="inferred0"><a name="line115"></a>115     else
+</span><span class="marked1"><a name="line116"></a>116       path_without_lead_or_trailing_slash(uri)
+</span><span class="inferred0"><a name="line117"></a>117     end
+</span><span class="inferred1"><a name="line118"></a>118   end
+</span><span class="inferred0"><a name="line119"></a>119 
+</span><span class="inferred1"><a name="line120"></a>120   # its better to use a YAML library functionality to convert the YAML str to 2-D array below
+</span><span class="marked0"><a name="line121"></a>121   def str2array(str)
+</span><span class="marked1"><a name="line122"></a>122     main_arr = []
+</span><span class="marked0"><a name="line123"></a>123     str = str.gsub(/\r/, '')
+</span><span class="marked1"><a name="line124"></a>124     str_arr = str.split(/\n/)
+</span><span class="marked0"><a name="line125"></a>125     str_arr.each do |s|
+</span><span class="marked1"><a name="line126"></a>126        node = s.split(': ')
+</span><span class="marked0"><a name="line127"></a>127        sim_arr = [node[0], node[1].strip]     
+</span><span class="marked1"><a name="line128"></a>128        main_arr &lt;&lt; sim_arr
+</span><span class="inferred0"><a name="line129"></a>129     end
+</span><span class="marked1"><a name="line130"></a>130     return main_arr
+</span><span class="inferred0"><a name="line131"></a>131   end
+</span><span class="inferred1"><a name="line132"></a>132 
+</span><span class="inferred0"><a name="line133"></a>133 end
 </span></pre><hr />    <p>Generated using the <a href='http://eigenclass.org/hiki.rb?rcov'>rcov code coverage analysis tool for Ruby</a> version 0.8.1.2.</p><p>
           <a href='http://validator.w3.org/check/referer'>
             <img src='http://www.w3.org/Icons/valid-xhtml10' height='31' alt='Valid XHTML 1.0!' width='88' />

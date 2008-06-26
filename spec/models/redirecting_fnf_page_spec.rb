@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
 describe RedirectingFnfPage do 
-    scenario :users, :home_page
+    scenario :home_page
 
     TEMPYAMLHASH = <<-YAML
 a/page: http://example/new/page
@@ -15,9 +15,15 @@ a1/page: http://example.com/new1/page
 last1-page: the1/last/page
                     YAML
 
+    DUPYAMLHASH = <<-YAML
+dupa1: http://example/new/page
+dupa1: /a/different/page
+last-page: the/last/page
+                     YAML
+
     before do
         create_page "Gallery", :body => 'Hello World'
-        create_page "File not found", :class_name => "RedirectingFnfPage", :slug => ' ', :breadcrumb => '-' do
+        create_page "File not found", :class_name => "RedirectingFnfPage" do
               create_page_part "body", :content => "<span>File not found</span>", :id => 100
         end        
     end
@@ -30,7 +36,7 @@ last1-page: the1/last/page
       pages(:home).find_by_url("/missing_url").should == pages(:file_not_found)
     end
 
-    it "should render the 'body' part when there are no temporary or permanent part" do
+    it "should render the 'body' part of file_not_found page when there are no temporary or permanent part" do
        pages(:file_not_found).should render('<r:content />').as('<span>File not found</span>')
     end
 
@@ -78,17 +84,6 @@ last1-page: the1/last/page
                 page.render.should match(/<title>302/)
              end
         end
-#not valid specs below...need changes by checking validation to avoid below scenario...working on it
-=begin
-       TEMPYAMLHASH.each do |y|
-          yaml_arr = y.split(': ')
-             it "should render temporary redirect if there is both temporary and permanent redirects for same url and temporary preceeds permanent" do
-                page = pages(:file_not_found)
-                create_page_part "permanent", :content => TEMPYAMLHASH, :page_id => page.id
-		render_header(page, yaml_arr[0]).should == {"Location" => process_location(yaml_arr[1]), "Status"=>"302 Found"}
-             end
-        end
-=end
     end
 
     describe "permanent redirects" do
@@ -108,18 +103,45 @@ last1-page: the1/last/page
                 page = setup_page(page, yaml_arr[0])
                 page.render.should match(/<title>301/)
              end
-        end
-#not valid specs below...need changes by adding validations to avoid below scenario...working on it
-=begin
-       PERMYAMLHASH.each do |y|
-          yaml_arr = y.split(': ')
-             it "should render temporary redirect if there is both temporary and permanent redirects for same url and permanent preceeds temporary" do
-                page = pages(:file_not_found)
-                create_page_part "temporary", :content => PERMYAMLHASH, :page_id => page.id
-                render_header(page, yaml_arr[0]).should == {"Location" => process_location(yaml_arr[1]), "Status"=>"302 Found"}
-             end
-        end
-=end
+        end         
+
+    end
+
+    describe "validations" do
+
+      it "should be invaid if the same url to redirect is first added in temporary page part and then to permanent page part" do                
+         page = pages(:file_not_found)
+         create_page_part "temporary", :content => TEMPYAMLHASH, :page_id => page.id
+         create_page_part "permanent", :content => TEMPYAMLHASH, :page_id => page.id
+         page.should_not be_valid    
+      end       
+
+      it "should be invaid if the same url to redirect is first added in permanent page part and then to temporary page part" do                
+         page = pages(:file_not_found)
+         create_page_part "permanent", :content => PERMYAMLHASH, :page_id => page.id
+         create_page_part "temporary", :content => PERMYAMLHASH, :page_id => page.id
+         page.should_not be_valid             
+      end   
+
+      it "should be invalid if there are duplicate url's in the content of permanent page part" do
+         page = pages(:file_not_found)
+         create_page_part "permanent", :content => DUPYAMLHASH, :page_id => page.id
+         page.should_not be_valid  
+      end
+
+      it "should be invalid if there are duplicate url's in the content of temporary page part" do
+         page = pages(:file_not_found)
+         create_page_part "temporary", :content => DUPYAMLHASH, :page_id => page.id
+         page.should_not be_valid  
+      end
+
+      it "should be valid if there are different url's in temporary and permanent page parts" do
+         page = pages(:file_not_found)
+         create_page_part "temporary", :content => TEMPYAMLHASH, :page_id => page.id
+         create_page_part "permanent", :content => PERMYAMLHASH, :page_id => page.id
+         page.should be_valid
+      end
+
     end
 
    private
