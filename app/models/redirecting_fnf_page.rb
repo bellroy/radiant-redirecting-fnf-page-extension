@@ -4,7 +4,7 @@ class RedirectingFnfPage < FileNotFoundPage
 
   include RedirectingFnfPageValidations
   validates_parts_as_yaml_hash :temporary, :permanent
-  validates_parts_do_not_contain_duplicates :temporary, :permanent
+  validates_parts_do_not_contain_duplicates :temporary, :permanent, :if => Proc.new { |page| page.errors.on_base.blank? }
 
   description %{
     A "File Not Found Ext" page is like a "File Not Found" page, extended.

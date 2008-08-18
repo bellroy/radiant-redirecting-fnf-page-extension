@@ -40,20 +40,6 @@ last-page: the/last/page
        pages(:file_not_found).should render('<r:content />').as('<span>File not found</span>')
     end
 
-    it "should not be valid if the YAML specified in temporary page part content is invalid" do
-       page = pages(:file_not_found)
-       page.stub!(:parts).and_return([mock('temporary part', :null_object => true,
-                                           :name => "temporary", :content => invalid_yaml)])
-       page.should_not be_valid
-    end
-
-    it "should not be valid if the YAML specified in permanent page part content is invalid" do
-       page = pages(:file_not_found)
-       page.stub!(:parts).and_return([mock('permanent part', :null_object => true,
-                                           :name => "permanent", :content => invalid_yaml)])
-       page.should_not be_valid
-    end
-
     it "should render the 'body' part of file_not_found when the missing url does not match any url's provided in temporary part" do
        page = pages(:file_not_found)
        create_page_part "temporary", :content => TEMP_YAML_HASH, :page_id => page.id
@@ -144,6 +130,19 @@ last-page: the/last/page
          page.should be_valid
       end
 
+      it "should be invalid if the YAML specified in temporary page part content is invalid" do
+        page = pages(:file_not_found)
+        page.stub!(:parts).and_return([mock('temporary part', :null_object => true,
+                                            :name => "temporary", :content => invalid_yaml)])
+        page.should_not be_valid
+      end
+
+      it "should be invalid if the YAML specified in permanent page part content is invalid" do
+        page = pages(:file_not_found)
+        page.stub!(:parts).and_return([mock('permanent part', :null_object => true,
+                                            :name => "permanent", :content => invalid_yaml)])
+        page.should_not be_valid
+      end
     end
 
    private
