@@ -7,8 +7,14 @@ class RedirectingFnfPageExtension < Radiant::Extension
   url "http://github.com/tricycle/radiant-redirecting-fnf-page-extension/"
   
   def activate
+    require_dependency 'application'
     FileNotFoundPage
     RedirectingFnfPage
+    admin.page.edit.add(:form, "part_errors", :before => "edit_page_parts")
+  end
+
+  def deactivate
+    
   end
   
 end

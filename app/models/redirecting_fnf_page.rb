@@ -3,6 +3,7 @@ class RedirectingFnfPage < FileNotFoundPage
   class PageConfigError < StandardError; end
 
   include RedirectingFnfPageValidations
+  validates_parts_as_yaml_hash :temporary, :permanent
   validates_parts_do_not_contain_duplicates :temporary, :permanent
 
   description %{
@@ -13,7 +14,7 @@ class RedirectingFnfPage < FileNotFoundPage
     302 status codes). A page part called "permanent" allows permanent redirections 
     (strictly, 301 status codes).
   }
-  
+
   def headers
     status = status_header
     if status.match(/^404/)
@@ -74,18 +75,12 @@ class RedirectingFnfPage < FileNotFoundPage
   end
 
   def redirect_hash(yaml)
-    begin
-      hash = {}
-      hash_from_yaml = YAML.load(yaml)
-      raise PageConfigError, "There is a problem with your temporary or permanent configuration page parts." unless hash_from_yaml.is_a?(Hash)
-      hash_from_yaml.each_pair do |k,v|
-        hash[path_without_lead_or_trailing_slash(k)] = path_without_lead_or_trailing_slash(v)
-      end
-      hash
-    rescue RuntimeError => e
-      puts e.inspect
-      raise e
+    hash = {}
+    hash_from_yaml = YAML.load(yaml)
+    hash_from_yaml.each_pair do |k,v|
+      hash[path_without_lead_or_trailing_slash(k)] = path_without_lead_or_trailing_slash(v)
     end
+    hash
   end
   def path_without_lead_or_trailing_slash(path)
     path[%r{^/?(.*)/?$}, 1]
