@@ -116,11 +116,23 @@ last-page: the/last/page
       page.should_not be_valid  
     end
 
-    it "should be valid if there are different url's in temporary and permanent page parts" do
-      page = pages(:file_not_found)
-      create_page_part "temporary", :content => REDIRECTS_YAML_HASH_1, :page_id => page.id
-      create_page_part "permanent", :content => REDIRECTS_YAML_HASH_2, :page_id => page.id
-      page.should be_valid
+    describe "duplicated normalized urls" do
+      before(:each) do
+        @page = pages(:file_not_found)
+      end
+
+      it "should be valid if there are different url's in temporary and permanent page parts" do
+        create_page_part "temporary", :content => REDIRECTS_YAML_HASH_1, :page_id => @page.id
+        create_page_part "permanent", :content => REDIRECTS_YAML_HASH_2, :page_id => @page.id
+        @page.should be_valid
+      end
+
+      it "should not be valid if there are duplicated normalized urls in temporary and permanent page parts" do
+        create_page_part "temporary", :content => "a-location: 1", :page_id => @page.id
+        create_page_part "permanent", :content => "/a-location: 2", :page_id => @page.id
+        @page.should_not be_valid                                                 
+        @page.errors.on("base").should match(/You've defined what you want me to do .* more than once/)
+      end
     end
 
     it "should be invalid if the YAML specified in temporary page part content is invalid" do
@@ -128,6 +140,7 @@ last-page: the/last/page
       page.stub!(:parts).and_return([mock('temporary part', :null_object => true,
                                           :name => "temporary", :content => invalid_yaml)])
       page.should_not be_valid
+      page.errors.on("base").should match(/doesn't appear to be formatted correctly/)
     end
 
     it "should be invalid if the YAML specified in permanent page part content is invalid" do
@@ -135,6 +148,14 @@ last-page: the/last/page
       page.stub!(:parts).and_return([mock('permanent part', :null_object => true,
                                           :name => "permanent", :content => invalid_yaml)])
       page.should_not be_valid
+      page.errors.on("base").should match(/doesn't appear to be formatted correctly/)
+    end
+    it "should be invalid if the YAML specified in permanent page part content is valid YAML, but not a properly formed hash" do
+      page = pages(:file_not_found)
+      page.stub!(:parts).and_return([mock('permanent part', :null_object => true,
+                                          :name => "permanent", :content => "a: 1\ndave")])
+      page.should_not be_valid
+      page.errors.on("base").should match(/doesn't appear to be formatted correctly/)
     end
   end
 
