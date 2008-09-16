@@ -55,18 +55,32 @@ last-page: the/last/page
   end
 
   describe "redirects", :shared => true do
+    before do
+      @page = pages(:file_not_found)
+    end
     REDIRECTS_YAML_HASH_1.each do |y|
       yaml_arr = y.split(': ')
-      it "should render header with appropriate location and status when part exists " +
+      location_part = yaml_arr[1].chomp.sub(%r{^(/|http://)},'')
+      it "should render header with appropriate keys when part exists " +
          "(for missing url #{yaml_arr[0]})" do 
-        page = pages(:file_not_found)
-        render_header(page, yaml_arr[0]).should ==
-          {"Location" => process_location(yaml_arr[1]), "Status"=>@status[:text]}
+        render_header(@page, yaml_arr[0]).keys.should == ["Status", "Location"]
+      end
+      it "should render header with appropriate status when part exists " +
+         "(for missing url #{yaml_arr[0]})" do 
+        render_header(@page, yaml_arr[0])["Status"].should == @status[:text]
       end
       it "should render appropriate html when part exists (for missing url #{yaml_arr[0]})" do
-        page = pages(:file_not_found)
-        page = setup_page(page, yaml_arr[0])
-        page.render.should match(/<title>#{@status[:code]}/)
+        @page = setup_page(@page, yaml_arr[0])
+        @page.render.should match(/<title>#{@status[:code]}/)
+      end
+      if yaml_arr[0].match(%r{^(/|http://)})
+        it "should serve exact destinations when a leading \w+:// or / exists in destination" do
+          render_header(@page, yaml_arr[0])["Location"].should == yaml_arr[1].chomp
+        end
+      else
+        it "should infer leading / when no leading \w+:// or / in destination" do
+          render_header(@page, yaml_arr[0])["Location"].should match(Regexp.new("/" + location_part + "$"))
+        end
       end
     end
   end
@@ -157,6 +171,19 @@ last-page: the/last/page
       page.should_not be_valid
       page.errors.on("base").should match(/doesn't appear to be formatted correctly/)
     end
+
+    describe "details" do
+      it "should handle YAML type inferences in keys" do
+        page = pages(:file_not_found)
+        create_page_part "permanent", :content => "4: string", :page_id => page.id
+        lambda { page.render }.should_not raise_error
+      end
+      it "should handle YAML type inferences in values" do
+        page = pages(:file_not_found)
+        create_page_part "permanent", :content => "string: 4", :page_id => page.id
+        lambda { page.render }.should_not raise_error
+      end
+    end
   end
 
   private
@@ -171,12 +198,6 @@ last-page: the/last/page
     page.request.request_uri = url
     page.response = ActionController::TestResponse.new
     return page
-  end
-
-  def process_location(loc)
-    loc.strip!
-    loc.slice!(0,1) if loc.slice(0,1) == '/'        
-    loc.chomp
   end
 
   def invalid_yaml

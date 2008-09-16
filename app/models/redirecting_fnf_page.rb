@@ -43,13 +43,13 @@ class RedirectingFnfPage < FileNotFoundPage
   private
 
   def status_header
-    if temporary_redirects[attempted_path]
-      "302 Found"
-    elsif permanent_redirects[attempted_path]
-      "301 Moved Permanently"
-    else
-      "404 Not Found"
-    end
+    @status_header ||= if temporary_redirects[attempted_path]
+                         "302 Found"
+                       elsif permanent_redirects[attempted_path]
+                         "301 Moved Permanently"
+                       else
+                         "404 Not Found"
+                       end
   end
 
   def location_header
@@ -75,15 +75,17 @@ class RedirectingFnfPage < FileNotFoundPage
   end
 
   def redirect_hash(yaml)
-    hash = {}
-    hash_from_yaml = YAML.load(yaml)
-    hash_from_yaml.each_pair do |k,v|
-      hash[path_without_lead_or_trailing_slash(k)] = path_without_lead_or_trailing_slash(v)
-    end
-    hash
+    @hash ||= begin
+                hash = {}
+                hash_from_yaml = YAML.load(yaml)
+                hash_from_yaml.each_pair do |k,v|
+                  hash[path_with_lead_without_trailing_slash(k)] = path_with_lead_without_trailing_slash(v)
+                end
+                hash
+              end
   end
-  def path_without_lead_or_trailing_slash(path)
-    path[%r{^/?(.*)/?$}, 1]
+  def path_with_lead_without_trailing_slash(path)
+    "/" + path.to_s[%r{^/?(.*)/?$}, 1]
   end
 
   def attempted_uri
@@ -93,9 +95,9 @@ class RedirectingFnfPage < FileNotFoundPage
     uri = attempted_uri
     case uri
     when %r{^\w+://[^/]+/}
-      path_without_lead_or_trailing_slash(uri[%r{^\w+://[^/]+(.+)$}, 1])
+      path_with_lead_without_trailing_slash(uri[%r{^\w+://[^/]+(.+)$}, 1])
     else
-      path_without_lead_or_trailing_slash(uri)
+      path_with_lead_without_trailing_slash(uri)
     end
   end
 
