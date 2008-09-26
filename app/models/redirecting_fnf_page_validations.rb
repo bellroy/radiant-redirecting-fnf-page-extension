@@ -68,37 +68,3 @@ The #{page_part.name} page part doesn't appear to be formatted correctly. I can'
   end
 
 end
-
-
-__END__
-
-  def validate
-    hash = {}
-    self.parts.each do |page_part|
-      if page_part.name == 'temporary' or page_part.name == 'permanent'
-        page_part_arr =  normalized_array_from_page_part(page_part.content)
-        page_part_arr.each do |p| 
-          unless hash.has_key?(p[0])
-            hash[p[0]] = page_part.name
-          else
-            errors.add_to_base("Cannot save since there is duplication of rediecting urls" ) 
-          end
-        end
-      end
-    end
-  end
-  
-  private
-
-  # its better to use a YAML library functionality to convert the YAML str to 2-D array below
-  def normalized_array_from_page_part(str)
-    main_arr = []
-    str = str.gsub(/\r/, '')
-    str_arr = str.split(/\n/)
-    str_arr.each do |s|
-       node = s.split(': ')
-       sim_arr = [node[0], node[1].strip]     
-       main_arr << sim_arr
-    end
-    return main_arr
-  end

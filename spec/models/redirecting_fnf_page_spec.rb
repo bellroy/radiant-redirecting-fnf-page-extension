@@ -3,13 +3,14 @@ require File.dirname(__FILE__) + '/../spec_helper'
 describe RedirectingFnfPage do 
   scenario :home_page
 
-  REDIRECTS_YAML_HASH_1 = <<-YAML
+  REDIRECTS_YAML_HASH = <<-YAML
 a/page: http://example/new/page
 /a-page: /a/different/page
 last-page: the/last/page
+a/nother/page: /
                    YAML
 
-  REDIRECTS_YAML_HASH_2 = <<-YAML
+  REDIRECTS_YAML_HASH_DIFFERENT = <<-YAML
 a1/page: http://example.com/new1/page
 /a1-page: /a1/different/page
 last1-page: the1/last/page
@@ -42,14 +43,14 @@ last-page: the/last/page
 
   it "should render the 'body' part of file_not_found when the missing url does not match any url's provided in temporary part" do
     page = pages(:file_not_found)
-    create_page_part "temporary", :content => REDIRECTS_YAML_HASH_1, :page_id => page.id
+    create_page_part "temporary", :content => REDIRECTS_YAML_HASH, :page_id => page.id
     render_header(page, '/missing_url').should == {"Status"=>"404 Not Found"}
     page.render.should == '<span>File not found</span>'
   end
 
   it "should render the 'body' part of file_not_found when the missing url does not match any url's provided in permanent part" do
     page = pages(:file_not_found)
-    create_page_part "permanent", :content => REDIRECTS_YAML_HASH_2, :page_id => page.id
+    create_page_part "permanent", :content => REDIRECTS_YAML_HASH, :page_id => page.id
     render_header(page, '/missing_url').should == {"Status"=>"404 Not Found"}
     page.render.should == '<span>File not found</span>'
   end
@@ -58,7 +59,7 @@ last-page: the/last/page
     before do
       @page = pages(:file_not_found)
     end
-    REDIRECTS_YAML_HASH_1.each do |y|
+    REDIRECTS_YAML_HASH.each do |y|
       yaml_arr = y.split(': ')
       location_part = yaml_arr[1].chomp.sub(%r{^(/|http://)},'')
       it "should render header with appropriate keys when part exists " +
@@ -88,7 +89,7 @@ last-page: the/last/page
   describe "temporary redirects" do
     before  do
       @status = {:code => 302, :text => "302 Found"}
-      create_page_part "temporary", :content => REDIRECTS_YAML_HASH_1, :page_id => pages(:file_not_found).id
+      create_page_part "temporary", :content => REDIRECTS_YAML_HASH, :page_id => pages(:file_not_found).id
     end
     it_should_behave_like "redirects"
   end
@@ -97,7 +98,7 @@ last-page: the/last/page
     before  do
       @status = {:code => 301, :text => "301 Moved Permanently"}
       pages(:file_not_found)
-      create_page_part "permanent", :content => REDIRECTS_YAML_HASH_1, :page_id => pages(:file_not_found).id
+      create_page_part "permanent", :content => REDIRECTS_YAML_HASH, :page_id => pages(:file_not_found).id
     end
     it_should_behave_like "redirects"
   end
@@ -106,15 +107,15 @@ last-page: the/last/page
 
     it "should be invaid if the same url to redirect is first added in temporary page part and then to permanent page part" do                
       page = pages(:file_not_found)
-      create_page_part "temporary", :content => REDIRECTS_YAML_HASH_1, :page_id => page.id
-      create_page_part "permanent", :content => REDIRECTS_YAML_HASH_1, :page_id => page.id
+      create_page_part "temporary", :content => REDIRECTS_YAML_HASH, :page_id => page.id
+      create_page_part "permanent", :content => REDIRECTS_YAML_HASH, :page_id => page.id
       page.should_not be_valid    
     end       
 
     it "should be invaid if the same url to redirect is first added in permanent page part and then to temporary page part" do                
       page = pages(:file_not_found)
-      create_page_part "permanent", :content => REDIRECTS_YAML_HASH_2, :page_id => page.id
-      create_page_part "temporary", :content => REDIRECTS_YAML_HASH_2, :page_id => page.id
+      create_page_part "permanent", :content => REDIRECTS_YAML_HASH, :page_id => page.id
+      create_page_part "temporary", :content => REDIRECTS_YAML_HASH, :page_id => page.id
       page.should_not be_valid             
     end   
 
@@ -136,8 +137,8 @@ last-page: the/last/page
       end
 
       it "should be valid if there are different url's in temporary and permanent page parts" do
-        create_page_part "temporary", :content => REDIRECTS_YAML_HASH_1, :page_id => @page.id
-        create_page_part "permanent", :content => REDIRECTS_YAML_HASH_2, :page_id => @page.id
+        create_page_part "temporary", :content => REDIRECTS_YAML_HASH, :page_id => @page.id
+        create_page_part "permanent", :content => REDIRECTS_YAML_HASH_DIFFERENT, :page_id => @page.id
         @page.should be_valid
       end
 
