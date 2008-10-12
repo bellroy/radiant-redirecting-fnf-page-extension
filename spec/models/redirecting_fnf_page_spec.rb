@@ -103,6 +103,19 @@ last-page: the/last/page
     it_should_behave_like "redirects"
   end
 
+  describe "trailing slashes" do
+    before do
+      @page = pages(:file_not_found)
+      %w[permanent temporary].each do |part|
+        create_page_part part, :content => "/this: /that\n/thing/: /other", :page_id => @page.id
+      end
+    end
+    it "should ignore trailing slashes in keys when redirecting" do
+      render_header(@page, "/this/")["Status"].should match(/30\d/)
+      render_header(@page, "/thing")["Status"].should match(/30\d/)
+    end
+  end
+
   describe "validations" do
 
     it "should be invaid if the same url to redirect is first added in temporary page part and then to permanent page part" do                
@@ -142,11 +155,17 @@ last-page: the/last/page
         @page.should be_valid
       end
 
-      it "should not be valid if there are duplicated normalized urls in temporary and permanent page parts" do
-        create_page_part "temporary", :content => "a-location: 1", :page_id => @page.id
-        create_page_part "permanent", :content => "/a-location: 2", :page_id => @page.id
-        @page.should_not be_valid                                                 
-        @page.errors.on("base").should match(/You've defined what you want me to do .* more than once/)
+      fixture = [
+        ["a-location: 1", "/a-location: 2"],
+        ["a-location: 1", "a-location/: 2"],
+      ]
+      fixture.each do |fix|
+        it "should not be valid if there are duplicated normalized urls in temporary and permanent page parts" do
+          create_page_part "temporary", :content => fix.first, :page_id => @page.id
+          create_page_part "permanent", :content => fix.last,  :page_id => @page.id
+          @page.should_not be_valid                                                 
+          @page.errors.on("base").should match(/You've defined what you want me to do .* more than once/)
+        end
       end
     end
 

@@ -53,14 +53,14 @@ The #{page_part.name} page part doesn't appear to be formatted correctly. I can'
       end
     end
 
-    # its better to use a YAML library functionality to convert the YAML str to 2-D array below
+    # FIXME: smelly code
     def normalized_array_from_page_part(str)
       main_arr = []
       str = str.gsub(/\r/, '')
       str_arr = str.split(/\n/)
       str_arr.each do |s|
          node = s.split(': ')
-         sim_arr = [node[0].sub(%r[^/?],'/'), node[1].strip]     
+         sim_arr = [node[0].sub(%r[^/?],'/').sub(%r[/$],''), node[1].strip]     
          main_arr << sim_arr
       end
       return main_arr
