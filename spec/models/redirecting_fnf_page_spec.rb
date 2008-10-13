@@ -191,6 +191,11 @@ last-page: the/last/page
       page.should_not be_valid
       page.errors.on("base").should match(/doesn't appear to be formatted correctly/)
     end
+    it "should be valid if the YAML is valid and contains empty lines" do
+      page = pages(:file_not_found)
+      create_page_part "temporary", :content => "/a: /b\n\n/c: /d", :page_id => page.id
+      page.should be_valid
+    end
 
     describe "details" do
       it "should handle YAML type inferences in keys" do

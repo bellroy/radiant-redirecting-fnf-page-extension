@@ -22,6 +22,8 @@ The #{page_part.name} page part doesn't appear to be formatted correctly. I can'
               record.errors.add_to_base(error_message)
               page_part.errors.add :content, error_message
             end
+            normalized_array_from_page_part # call this, to make sure it'll work in
+                                            # #validates_parts_do_not_contain_duplicates
           rescue ArgumentError => e
             if e.message.match(/syntax/)
               record.errors.add_to_base(error_message)
@@ -59,9 +61,11 @@ The #{page_part.name} page part doesn't appear to be formatted correctly. I can'
       str = str.gsub(/\r/, '')
       str_arr = str.split(/\n/)
       str_arr.each do |s|
-         node = s.split(': ')
-         sim_arr = [node[0].sub(%r[^/?],'/').sub(%r[/$],''), node[1].strip]     
-         main_arr << sim_arr
+        next if s.empty?
+        node = s.split(': ')
+        raise(ArgumentError, "Bad syntax.") unless (node.size == 2) && (node.first && node.last)
+        sim_arr = [node[0].sub(%r[^/?],'/').sub(%r[/$],''), node[1].strip]
+        main_arr << sim_arr
       end
       return main_arr
     end
