@@ -54,6 +54,17 @@ The #{page_part.name} page part doesn't appear to be formatted correctly. I can'
         end
       end
     end
+    def validates_part_does_not_contain_duplicates(part_to_validate)
+      validates_each(:parts, {}) do |record, attr, page_parts|
+        page_part = page_parts.detect {|pp| pp.name.to_sym == part_to_validate }
+
+        if page_part
+          urls = page_part.content.split("\n").collect {|line| line.sub(%r[^/?],'/').sub(%r[/$],'') }
+          dups = array_duplicates(urls)
+          record.errors.add_to_base("You've included two versions of #{dups.to_sentence} in page part '#{page_part.name}'") unless dups.empty?
+        end
+      end
+    end
 
     # FIXME: smelly code
     def normalized_array_from_page_part(str)
@@ -68,6 +79,16 @@ The #{page_part.name} page part doesn't appear to be formatted correctly. I can'
         main_arr << sim_arr
       end
       return main_arr
+    end
+
+    def array_duplicates(ary)
+      h = Hash.new(0)
+      ary.each {|e| h[e] += 1 }
+      dups = []
+      h.each do |k,v|
+        dups << k if v > 1
+      end
+      dups
     end
   end
 

@@ -2,4 +2,4 @@
 
 File Not Found Extensions
 
-A decendant of the FileNotFound page that supports a redirect list.
+A decendant of the FileNotFound page that supports temporary and permanent redirect lists (HTTP status codes 301 Moved Permanently & 302 Found), and a removed (410 Gone) list.

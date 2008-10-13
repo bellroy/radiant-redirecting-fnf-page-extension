@@ -103,6 +103,21 @@ last-page: the/last/page
     it_should_behave_like "redirects"
   end
 
+  describe "gone list" do
+    before do
+      @page = pages(:file_not_found)
+      create_page_part "gone", :content => "/removed-page\nother-removed-page/", :page_id => @page.id
+    end
+
+    %w[removed-page other-removed-page].each do |slug|
+      ["", "/"].each do |trail|
+        it "should render header with status 410 when part exists, ignoring trailing slashes" do 
+          render_header(@page, "/#{slug}#{trail}")["Status"].should == "410 Gone"
+        end
+      end
+    end
+  end
+
   describe "trailing slashes" do
     before do
       @page = pages(:file_not_found)
@@ -165,6 +180,15 @@ last-page: the/last/page
           create_page_part "permanent", :content => fix.last,  :page_id => @page.id
           @page.should_not be_valid                                                 
           @page.errors.on("base").should match(/You've defined what you want me to do .* more than once/)
+        end
+      end
+
+      fixture = [ "a-location\na-location/", "/a-location/\na-location/" ]
+      fixture.each do |fix|
+        it "should not be valid if there are duplicated normalized urls in gone page part" do
+          create_page_part "gone", :content => fix,  :page_id => @page.id
+          @page.should_not be_valid                                                 
+          @page.errors.on("base").should match(/You've included two versions of \/a-location/)
         end
       end
     end

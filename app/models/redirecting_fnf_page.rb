@@ -5,6 +5,7 @@ class RedirectingFnfPage < FileNotFoundPage
   include RedirectingFnfPageValidations
   validates_parts_as_yaml_hash :temporary, :permanent
   validates_parts_do_not_contain_duplicates :temporary, :permanent, :if => Proc.new { |page| page.errors.on_base.blank? }
+  validates_part_does_not_contain_duplicates :gone
 
   description %{
     A "File Not Found Ext" page is like a "File Not Found" page, extended.
@@ -35,6 +36,8 @@ class RedirectingFnfPage < FileNotFoundPage
 <p>The document has moved <a href="#{redirect}">here</a>.</p>
 </body></html>
       HTML
+    elsif gone_list[attempted_path]
+      ""
     else
       super
     end
@@ -47,6 +50,8 @@ class RedirectingFnfPage < FileNotFoundPage
                          "302 Found"
                        elsif permanent_redirects[attempted_path]
                          "301 Moved Permanently"
+                       elsif gone_list[attempted_path]
+                         "410 Gone"
                        else
                          "404 Not Found"
                        end
@@ -69,6 +74,19 @@ class RedirectingFnfPage < FileNotFoundPage
   def permanent_redirects
     if permanent = part("permanent")
       redirect_hash(parse_object(permanent))
+    else
+      {}
+    end
+  end
+
+  def gone_list
+    if gone = part("gone")
+      hash = {}
+      gone.content.each do |line|
+        next if line.chomp.empty?
+        hash[path_with_lead_without_trailing_slash(line.chomp)] = true
+      end
+      hash
     else
       {}
     end
