@@ -60,27 +60,28 @@ last-page: the/last/page
       @page = pages(:file_not_found)
     end
     REDIRECTS_YAML_HASH.each do |y|
-      yaml_arr = y.split(': ')
-      location_part = yaml_arr[1].chomp.sub(%r{^(/|http://)},'')
+      redir, target = y.split(': ')
+      location_part = target.chomp.sub(%r{^(/|http://)},'')
       it "should render header with appropriate keys when part exists " +
-         "(for missing url #{yaml_arr[0]})" do 
-        render_header(@page, yaml_arr[0]).keys.should == ["Status", "Location"]
+         "(for missing url #{redir})" do 
+        render_header(@page, redir).keys.should == ["Status", "Location"]
       end
       it "should render header with appropriate status when part exists " +
-         "(for missing url #{yaml_arr[0]})" do 
-        render_header(@page, yaml_arr[0])["Status"].should == @status[:text]
+         "(for missing url #{redir})" do 
+        render_header(@page, redir)["Status"].should == @status[:text]
       end
-      it "should render appropriate html when part exists (for missing url #{yaml_arr[0]})" do
-        @page = setup_page(@page, yaml_arr[0])
+      it "should render appropriate html when part exists (for missing url #{redir})" do
+        @page = setup_page(@page, redir)
         @page.render.should match(/<title>#{@status[:code]}/)
       end
-      if yaml_arr[0].match(%r{^(/|http://)})
+      if target.match(%r{^(/|http://)})
         it "should serve exact destinations when a leading \w+:// or / exists in destination" do
-          render_header(@page, yaml_arr[0])["Location"].should == yaml_arr[1].chomp
+debugger
+          render_header(@page, redir)["Location"].should == target.chomp
         end
       else
         it "should infer leading / when no leading \w+:// or / in destination" do
-          render_header(@page, yaml_arr[0])["Location"].should match(Regexp.new("/" + location_part + "$"))
+          render_header(@page, redir)["Location"].should match(Regexp.new("/" + location_part + "$"))
         end
       end
     end

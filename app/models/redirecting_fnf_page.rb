@@ -103,7 +103,12 @@ class RedirectingFnfPage < FileNotFoundPage
               end
   end
   def path_with_lead_without_trailing_slash(path)
-    "/" + path.to_s[%r{^/?(.*?)/?$}, 1]
+    case path
+    when %r{^\w+://}
+      path.to_s.sub(%r{/$},'')
+    else
+      "/" + path.to_s[%r{^/?(.*?)/?$}, 1]
+    end
   end
 
   def attempted_uri
