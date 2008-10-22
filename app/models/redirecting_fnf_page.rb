@@ -57,7 +57,7 @@ class RedirectingFnfPage < FileNotFoundPage
   end
 
   def location_header
-    temporary_redirects[attempted_path] || permanent_redirects[attempted_path]
+    redirects[attempted_path]
   end
 
   def redirects
