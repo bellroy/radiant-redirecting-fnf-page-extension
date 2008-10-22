@@ -94,8 +94,7 @@ class RedirectingFnfPage < FileNotFoundPage
   def redirect_hash(yaml)
     @hash ||= begin
                 hash = {}
-                hash_from_yaml = YAML.load(yaml)
-                hash_from_yaml.each_pair do |k,v|
+                YAML.load(yaml).each_pair do |k,v|
                   hash[path_with_lead_without_trailing_slash(k)] = path_with_lead_without_trailing_slash(v)
                 end
                 hash
@@ -104,7 +103,7 @@ class RedirectingFnfPage < FileNotFoundPage
   def path_with_lead_without_trailing_slash(path)
     case path
     when %r{^\w+://}
-      path.to_s.sub(%r{/$},'')
+      path.chomp('/')
     else
       "/" + path.to_s[%r{^/?(.*?)/?$}, 1]
     end
