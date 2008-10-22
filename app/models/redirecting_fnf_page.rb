@@ -17,8 +17,7 @@ class RedirectingFnfPage < FileNotFoundPage
   }
 
   def headers
-    status = status_header
-    if status.match(/^404/)
+    if status_header.match(/^(404|410)/)
       { 'Status' => status_header }
     else
       { 'Status' => status_header, "Location" => location_header }

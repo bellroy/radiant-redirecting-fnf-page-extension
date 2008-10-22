@@ -115,6 +115,9 @@ debugger
         it "should render header with status 410 when part exists, ignoring trailing slashes" do 
           render_header(@page, "/#{slug}#{trail}")["Status"].should == "410 Gone"
         end
+        it "should not have a location in the header" do
+          render_header(@page, "/#{slug}#{trail}").should_not include("Location")
+        end
       end
     end
   end
