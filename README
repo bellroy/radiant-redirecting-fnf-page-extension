@@ -1,5 +1,5 @@
-= File Not Found Ext
+= Redirecting FileNotFound Page Extension
 
-File Not Found Extensions
+Redirecting FileNotFound Page Extension
 
 A decendant of the FileNotFound page that supports temporary and permanent redirect lists (HTTP status codes 301 Moved Permanently & 302 Found), and a removed (410 Gone) list.

@@ -8,12 +8,16 @@ class RedirectingFnfPage < FileNotFoundPage
   validates_part_does_not_contain_duplicates :gone
 
   description %{
-    A "File Not Found Ext" page is like a "File Not Found" page, extended.
+    Redirecting FNF Page provides all the fun of a 404 plus more!
     
-    Adding a page part called "temporary" allows you to define temporary redirections
-    (that will not be remembered by search engines or properly behaved tools) (strictly
-    302 status codes). A page part called "permanent" allows permanent redirections 
-    (strictly, 301 status codes).
+     - Adding a page part called "temporary" allows you to define temporary redirections
+      (that will not be remembered by search engines or properly behaved tools) (strictly
+      302 status codes). 
+     - A page part called "permanent" allows permanent redirections 
+      (strictly, 301 status codes).
+     - A page part called "gone" allows you to define pages that are gone and are not
+      coming back (properly behaved bots won't try to find them again) (strictly
+       410 status codes)
   }
 
   def headers
