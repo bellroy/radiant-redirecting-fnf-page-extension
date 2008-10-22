@@ -35,8 +35,6 @@ class RedirectingFnfPage < FileNotFoundPage
 <p>The document has moved <a href="#{location_header}">here</a>.</p>
 </body></html>
       HTML
-    elsif gone?
-      ""
     else
       super
     end
