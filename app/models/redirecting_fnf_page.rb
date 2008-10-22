@@ -17,25 +17,25 @@ class RedirectingFnfPage < FileNotFoundPage
   }
 
   def headers
-    if status_header.match(/^(404|410)/)
-      { 'Status' => status_header }
-    else
+    if redirect?
       { 'Status' => status_header, "Location" => location_header }
+    else
+      { 'Status' => status_header }
     end
   end
 
   def render
-    if redirect = redirects[attempted_path]
+    if redirect?
       <<-HTML
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
 <html><head>
 <title>#{status_header}</title>
 </head><body>
 <h1>Found</h1>
-<p>The document has moved <a href="#{redirect}">here</a>.</p>
+<p>The document has moved <a href="#{location_header}">here</a>.</p>
 </body></html>
       HTML
-    elsif gone_list[attempted_path]
+    elsif gone?
       ""
     else
       super
@@ -44,16 +44,32 @@ class RedirectingFnfPage < FileNotFoundPage
 
   private
 
+  def redirect?
+    temporary_redirect? || permanent_redirect?
+  end
+
+  def temporary_redirect?
+    temporary_redirects[attempted_path]
+  end
+
+  def permanent_redirect?
+    permanent_redirects[attempted_path]
+  end
+  
+  def gone?
+    gone_list[attempted_path]
+  end
+
   def status_header
-    @status_header ||= if temporary_redirects[attempted_path]
-                         "302 Found"
-                       elsif permanent_redirects[attempted_path]
-                         "301 Moved Permanently"
-                       elsif gone_list[attempted_path]
-                         "410 Gone"
-                       else
-                         "404 Not Found"
-                       end
+    if temporary_redirect?
+     "302 Found"
+    elsif permanent_redirect?
+     "301 Moved Permanently"
+    elsif gone?
+      "410 Gone"
+    else
+      "404 Not Found"
+    end
   end
 
   def location_header
