@@ -84,18 +84,10 @@ class RedirectingFnfPage < FileNotFoundPage
     temporary_redirects.merge(permanent_redirects) 
   end
   def temporary_redirects
-    if temporary = part("temporary")
-      redirect_hash(parse_object(temporary))
-    else
-      {}
-    end
+    @temporary_redirects ||= redirect_hash("temporary")
   end
   def permanent_redirects
-    if permanent = part("permanent")
-      redirect_hash(parse_object(permanent))
-    else
-      {}
-    end
+    @permanent_redirects ||= redirect_hash("permanent")
   end
 
   def gone_list
@@ -111,14 +103,13 @@ class RedirectingFnfPage < FileNotFoundPage
     end
   end
 
-  def redirect_hash(yaml)
-    @hash ||= begin
-                hash = {}
-                YAML.load(yaml).each_pair do |k,v|
-                  hash[path_with_lead_without_trailing_slash(k)] = path_with_lead_without_trailing_slash(v)
-                end
-                hash
-              end
+  def redirect_hash(part_name)
+    yaml = parse_object(part(part_name) || PagePart.new)
+    hash = YAML.load(yaml) || {}
+    hash.each_pair do |k,v|
+      hash[path_with_lead_without_trailing_slash(k)] = path_with_lead_without_trailing_slash(v)
+    end
+    hash
   end
   def path_with_lead_without_trailing_slash(path)
     case path
