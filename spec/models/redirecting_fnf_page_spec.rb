@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
 describe RedirectingFnfPage do 
-  scenario :home_page
+  dataset :home_page
 
   REDIRECTS_YAML_HASH = <<-YAML
 a/page: http://example/new/page
@@ -76,7 +76,6 @@ last-page: the/last/page
       end
       if target.match(%r{^(/|http://)})
         it "should serve exact destinations when a leading \w+:// or / exists in destination" do
-debugger
           render_header(@page, redir)["Location"].should == target.chomp
         end
       else
@@ -98,10 +97,33 @@ debugger
   describe "permanent redirects" do
     before  do
       @status = {:code => 301, :text => "301 Moved Permanently"}
-      pages(:file_not_found)
       create_page_part "permanent", :content => REDIRECTS_YAML_HASH, :page_id => pages(:file_not_found).id
     end
     it_should_behave_like "redirects"
+  end
+  
+  describe "concurrent lists" do
+    before do
+      @page = pages(:file_not_found)
+      create_page_part "temporary", :content => "foo: bar", :page_id => @page.id
+      create_page_part "permanent", :content => "fi: fo", :page_id => @page.id
+      create_page_part "gone", :content => "baz", :page_id => @page.id
+    end
+    describe "for permanent" do
+      it 'should be 301 Moved Permanently' do
+        render_header(@page, "fi")["Status"].should == "301 Moved Permanently"
+      end
+    end
+    describe "for temporary" do
+      it 'should be 302 Found' do
+        render_header(@page, "foo")["Status"].should == "302 Found"
+      end
+    end
+    describe "for gone" do
+      it 'should be 410 Gone' do
+        render_header(@page, "baz")["Status"].should == "410 Gone"
+      end
+    end
   end
 
   describe "gone list" do

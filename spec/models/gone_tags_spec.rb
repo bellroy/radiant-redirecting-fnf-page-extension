@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
 describe 'GoneTags' do
-  scenario :home_page
+  dataset :home_page
   before do
     create_page("File not found", :class_name => "RedirectingFnfPage")
     @page = pages(:file_not_found)
