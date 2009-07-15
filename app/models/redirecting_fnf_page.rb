@@ -105,11 +105,12 @@ class RedirectingFnfPage < FileNotFoundPage
 
   def redirect_hash(part_name)
     yaml = parse_object(part(part_name) || PagePart.new)
-    hash = YAML.load(yaml) || {}
-    hash.each_pair do |k,v|
-      hash[path_with_lead_without_trailing_slash(k)] = path_with_lead_without_trailing_slash(v)
+    yaml_hash = YAML.load(yaml) || {}
+    redirect_hash = {}
+    yaml_hash.each_pair do |k,v|
+      redirect_hash[path_with_lead_without_trailing_slash(k)] = path_with_lead_without_trailing_slash(v)
     end
-    hash
+    redirect_hash
   end
   def path_with_lead_without_trailing_slash(path)
     case path
