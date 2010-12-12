@@ -104,7 +104,9 @@ class RedirectingFnfPage < FileNotFoundPage
   end
 
   def redirect_hash(part_name)
-    yaml = parse_object(part(part_name) || PagePart.new)
+    return {} unless part(part_name)
+
+    yaml = parse_object(part(part_name))
     yaml_hash = YAML.load(yaml) || {}
     redirect_hash = {}
     yaml_hash.each_pair do |k,v|

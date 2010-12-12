@@ -11,19 +11,16 @@ unless defined? RADIANT_ROOT
 end
 require "#{RADIANT_ROOT}/spec/spec_helper"
 
-if File.directory?(File.dirname(__FILE__) + "/scenarios")
-  Scenario.load_paths.unshift File.dirname(__FILE__) + "/scenarios"
-end
+Dataset::Resolver.default << (File.dirname(__FILE__) + "/datasets")
+
 if File.directory?(File.dirname(__FILE__) + "/matchers")
   Dir[File.dirname(__FILE__) + "/matchers/*.rb"].each {|file| require file }
 end
 
-include ApplicationHelper
-
 Spec::Runner.configure do |config|
-  config.use_transactional_fixtures = true
+  # config.use_transactional_fixtures = true
   # config.use_instantiated_fixtures  = false
-  config.fixture_path = RAILS_ROOT + '/vendor/extensions/trike_tags/spec/fixtures/'
+  # config.fixture_path = RAILS_ROOT + '/spec/fixtures'
 
   # You can declare fixtures for each behaviour like this:
   #   describe "...." do
