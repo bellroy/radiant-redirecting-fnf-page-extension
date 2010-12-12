@@ -30,14 +30,14 @@ last-page: the/last/page
   end
 
   it "should not redirect to file not found if requested page is present" do  
-    pages(:home).find_by_url("/gallery").should_not == pages(:file_not_found)
+    Page.find_by_url("/gallery").should_not == pages(:file_not_found)
   end
 
-  it "should redirect to the file not found if requested page is not present" do  
-    pages(:home).find_by_url("/missing_url").should == pages(:file_not_found)
+  it "should redirect to file not found if requested page is not present" do  
+    Page.find_by_url("/missing_url").should == pages(:file_not_found)
   end
 
-  it "should render the 'body' part of file_not_found page when there are no temporary or permanent part" do
+  it "should render the 'body' part of file_not_found page when there are no temporary or permanent parts" do
     pages(:file_not_found).should render('<r:content />').as('<span>File not found</span>')
   end
 
