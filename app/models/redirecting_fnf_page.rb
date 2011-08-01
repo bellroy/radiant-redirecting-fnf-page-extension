@@ -11,11 +11,11 @@ class RedirectingFnfPage < FileNotFoundPage
 
   description %{
     Redirecting FNF Page provides all the fun of a 404 plus more!
-    
+
      - Adding a page part called "temporary" allows you to define temporary redirections
       (that will not be remembered by search engines or properly behaved tools) (strictly
-      302 status codes). 
-     - A page part called "permanent" allows permanent redirections 
+      302 status codes).
+     - A page part called "permanent" allows permanent redirections
       (strictly, 301 status codes).
      - A page part called "gone" allows you to define pages that are gone and are not
       coming back (properly behaved bots won't try to find them again) (strictly
@@ -46,6 +46,15 @@ class RedirectingFnfPage < FileNotFoundPage
     end
   end
 
+  def attributes=(attributes={})
+    # ensure that parts are loaded before attributes are set
+    # if we do not do that and so. calls parts before save,
+    # the changes are lost.
+    self.parts(true) if attributes["parts_attributes"]
+
+    super attributes
+  end
+
   private
 
   def redirect?
@@ -59,7 +68,7 @@ class RedirectingFnfPage < FileNotFoundPage
   def permanent_redirect?
     permanent_redirects[attempted_path]
   end
-  
+
   def gone?
     gone_list[attempted_path]
   end
@@ -81,7 +90,7 @@ class RedirectingFnfPage < FileNotFoundPage
   end
 
   def redirects
-    temporary_redirects.merge(permanent_redirects) 
+    temporary_redirects.merge(permanent_redirects)
   end
   def temporary_redirects
     @temporary_redirects ||= redirect_hash("temporary")
